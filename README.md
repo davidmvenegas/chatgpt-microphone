@@ -1,6 +1,6 @@
 # 🎤 ChatGPT Microphone
 
-ChatGPT Microphone is a sleek and seamless Chrome extension designed to enhance your ChatGPT experience. This no-frills button blends perfectly with the site, allowing you to effortlessly speak your thoughts instead of typing them out.
+ChatGPT Microphone is a sleek and seamless Chrome extension designed to enhance your ChatGPT experience. This button blends perfectly with the site, allowing you to effortlessly speak your thoughts instead of typing them out.
 
 ## Features
 
