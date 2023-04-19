@@ -10,7 +10,7 @@ ChatGPT Microphone is a sleek and seamless Chrome extension designed to enhance 
 - 💰 **Completely FREE**: Enjoy all the benefits of ChatGPT Microphone at no cost.
 - 🔓 **Open Source**: Join the project and help make it even better!
 
-## Developer Installation
+## Dev Installation
 
 1. Download the latest release from the [Releases](https://github.com/davidmvenegas/chatgpt-microphone/releases) page.
 2. Navigate to `chrome://extensions/` in your Chrome browser.
