@@ -68,6 +68,15 @@ async function main() {
     // speech recognition state
     let isRecognitionActive = false;
 
+    // if speech recognition is still active, restart turn offs
+    recognition.onend = () => {
+        console.log('recognition ended')
+        if (isRecognitionActive) {
+            console.log('restarting recognition...')
+            recognition.start();
+        }
+    };
+
 
     // ----------------- CREATE BUTTON ----------------- //
 
