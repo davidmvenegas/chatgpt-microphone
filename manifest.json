@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "ChatGPT Microphone",
-    "version": "1.0",
+    "version": "1.0.1",
     "description": "Adds a microphone to ChatGPT's text bar.",
     "icons": {
         "48": "icon48.png"
@@ -17,7 +17,6 @@
         }
     ],
     "permissions": [
-        "activeTab",
         "storage"
     ],
     "action": {
