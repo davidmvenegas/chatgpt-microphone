@@ -1,11 +1,16 @@
 // ----------------- SETUP ----------------- //
 
 
-// is main function running
+// state variables
 let mainFunctionRunning = false;
+let scriptModifyingDOM = false;
+let recognition = null;
+let isRecognitionActive = false;
+let toggleRecognitionFunction = null;
 
-// listen for screen width changes
+// add event listeners
 window.addEventListener('resize', runMain);
+window.addEventListener('keydown', handleHotkey);
 
 // check if screen width is valid
 function isScreenWidthValid() {
@@ -56,21 +61,19 @@ async function main() {
     }
 
     // create an instance of Speech Recognition API
-    const recognition = new SpeechRecognition();
+    if (!recognition) {
+        recognition = new SpeechRecognition();
+    }
+
+    // speech recognition settings
     recognition.continuous = true;
     recognition.interimResults = true;
 
-    // speech recognition state
-    let isRecognitionActive = false;
-
-    // if speech recognition is active but not in progress, restart it
+    // if speech recognition has ended but is supposed to still be active, restart it
     recognition.onend = () => {
-        console.log('recognition ended');
         if (isRecognitionActive) {
             console.log('restarting recognition...');
-            setTimeout(() => {
-                recognition.start();
-            }, 100);
+            setTimeout(() => recognition.start(), 100);
         }
     };
 
@@ -79,6 +82,9 @@ async function main() {
 
 
     if (chatboxParentElement) {
+        // start modifying DOM
+        scriptModifyingDOM = true;
+
         // build microphone button
         microphoneButton.setAttribute('class', 'GPT-microphone-button absolute border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] hover:bg-gray-100 dark:hover:bg-gray-900');
         microphoneButton.setAttribute('style', 'right: -60px; bottom: 0; height: 50px; width: 50px; display: flex; align-items: center; justify-content: center; border-width: 1px; margin-bottom: -1px;');
@@ -152,29 +158,42 @@ async function main() {
             }
         });
 
-        // add event listener to microphone button
-        microphoneButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            isRecognitionActive ? turnOff(recognition) : turnOn(recognition);
-            isRecognitionActive = !isRecognitionActive;
-            chatboxElement.focus();
-        });
-
-        // add event listener to chatbox
+        // turn off speech recognition on submit
         chatboxElement.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 turnOff(recognition);
+                isRecognitionActive = false;
             }
         });
 
-        // add event listener to hotkey
-        window.addEventListener('keydown', handleHotkey);
+        // toggle speech recognition on click
+        microphoneButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleRecognition();
+        });
+
+        // stop modifying DOM
+        scriptModifyingDOM = false;
     }
 
 
     // ----------------- HELPER FUNCTIONS ----------------- //
 
+
+    // toggle speech recognition
+    function toggleRecognition() {
+        console.log('isRecognitionActive: ' + isRecognitionActive)
+        if (isRecognitionActive) {
+            console.log('stopping recognition...')
+            turnOff(recognition);
+        } else {
+            console.log('starting recognition...')
+            turnOn(recognition);
+        }
+        isRecognitionActive = !isRecognitionActive;
+        chatboxElement.focus();
+    }
 
     // turn microphone button on
     function turnOn(recognition) {
@@ -194,18 +213,8 @@ async function main() {
         }
     }
 
-    // listen for hotkey
-    function handleHotkey(e) {
-        const isMac = navigator.userAgent.includes("Mac");
-        const activationKey = isMac ? e.metaKey : e.ctrlKey;
-        // if ctrl/cmd + m is pressed, toggle speech recognition
-        if (activationKey && e.key.toLowerCase() === 'm') {
-            e.preventDefault();
-            isRecognitionActive ? turnOff(recognition) : turnOn(recognition);
-            isRecognitionActive = !isRecognitionActive;
-            chatboxElement.focus();
-        }
-    }
+    // assign toggleRecognition function to global scope
+    toggleRecognitionFunction = toggleRecognition;
 }
 
 
@@ -219,6 +228,17 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
+}
+
+// listen for hotkey
+function handleHotkey(e) {
+    const isMac = navigator.userAgent.includes("Mac");
+    const activationKey = isMac ? e.metaKey : e.ctrlKey;
+    // if ctrl/cmd + m is pressed, toggle speech recognition
+    if (activationKey && e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        toggleRecognitionFunction();
+    }
 }
 
 // load sendMessageOnMicOff setting from storage
@@ -239,9 +259,11 @@ function initObserver() {
                 if (
                     mutation.type === 'childList' &&
                     mutation.addedNodes.length > 0 &&
-                    !document.querySelector('.GPT-microphone-button')
+                    !document.querySelector('.GPT-microphone-button') &&
+                    !scriptModifyingDOM
                 ) {
                     console.log('Re-running main()...');
+                    removeMain();
                     main();
                 }
             }
@@ -253,6 +275,13 @@ function initObserver() {
 // remove main function
 function removeMain() {
     console.log('Removing...');
+    scriptModifyingDOM = true;
+    if (recognition) {
+        recognition.onend = null;
+        recognition.abort();
+    }
+    isRecognitionActive = false;
+    toggleRecognitionFunction = null;
     const microphoneActive = document.querySelector('.GPT-microphone-active');
     const microphonePath = document.querySelector('.GPT-microphone-path');
     const microphoneSVG = document.querySelector('.GPT-microphone-svg');
@@ -265,6 +294,7 @@ function removeMain() {
     if (iconContainer) iconContainer.remove();
     if (microphoneButton) microphoneButton.remove();
     if (microphoneAnimation) microphoneAnimation.remove();
+    scriptModifyingDOM = false;
 }
 
 
