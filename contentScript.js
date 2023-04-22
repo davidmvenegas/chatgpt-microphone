@@ -30,11 +30,6 @@ function runMain() {
 
 
 async function main() {
-
-
-    // ----------------- CREATE ELEMENTS ----------------- //
-
-
     // select chatbox element and its parent
     const chatboxElement = document.querySelector('textarea[tabindex="0"]');
     const chatboxParentElement = chatboxElement.parentNode;
@@ -68,12 +63,14 @@ async function main() {
     // speech recognition state
     let isRecognitionActive = false;
 
-    // if speech recognition is still active, restart turn offs
+    // if speech recognition is active but not in progress, restart it
     recognition.onend = () => {
-        console.log('recognition ended')
+        console.log('recognition ended');
         if (isRecognitionActive) {
-            console.log('restarting recognition...')
-            recognition.start();
+            console.log('restarting recognition...');
+            setTimeout(() => {
+                recognition.start();
+            }, 100);
         }
     };
 
@@ -82,8 +79,6 @@ async function main() {
 
 
     if (chatboxParentElement) {
-
-
         // build microphone button
         microphoneButton.setAttribute('class', 'GPT-microphone-button absolute border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] hover:bg-gray-100 dark:hover:bg-gray-900');
         microphoneButton.setAttribute('style', 'right: -60px; bottom: 0; height: 50px; width: 50px; display: flex; align-items: center; justify-content: center; border-width: 1px; margin-bottom: -1px;');
@@ -172,6 +167,9 @@ async function main() {
                 turnOff(recognition);
             }
         });
+
+        // add event listener to hotkey
+        window.addEventListener('keydown', handleHotkey);
     }
 
 
@@ -195,10 +193,24 @@ async function main() {
             sendButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
         }
     }
+
+    // listen for hotkey
+    function handleHotkey(e) {
+        const isMac = navigator.userAgent.includes("Mac");
+        const activationKey = isMac ? e.metaKey : e.ctrlKey;
+        // if ctrl/cmd + m is pressed, toggle speech recognition
+        if (activationKey && e.key.toLowerCase() === 'm') {
+            e.preventDefault();
+            isRecognitionActive ? turnOff(recognition) : turnOn(recognition);
+            isRecognitionActive = !isRecognitionActive;
+            chatboxElement.focus();
+        }
+    }
 }
 
 
 // ----------------- SIDE EFFECTS ----------------- //
+
 
 // debounce function
 function debounce(func, wait) {
