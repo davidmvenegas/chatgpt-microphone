@@ -1,41 +1,48 @@
+// ----------------- SETUP ----------------- //
 
 
-// ----------------- HELPER FUNCTIONS ----------------- //
+// is main function running
+let mainFunctionRunning = false;
 
+// listen for screen width changes
+window.addEventListener('resize', runMain);
 
-// reload when navigating to a new page
-const navigationObserver = new MutationObserver((_, observer) => {
-    if (window.location.href !== observer.lastUrl) {
-        observer.lastUrl = window.location.href;
-        setTimeout(() => main(), 1000);
-    }
-});
-
-navigationObserver.observe(document.body, { childList: true, subtree: true });
-navigationObserver.lastUrl = window.location.href;
-
-
-// load sendMessageOnMicOff setting from storage
-async function sendMessageOnMicOff() {
-    return new Promise((resolve) => {
-        chrome.storage.sync.get('sendMessageOnMicOff', (result) => {
-            return resolve(result.sendMessageOnMicOff);
-        });
-    });
+// check if the screen width is valid
+function isScreenWidthValid() {
+    return window.innerWidth >= 1100;
 }
+
+// run the main function
+function runMain() {
+    console.log('listening for screen width changes...');
+    if (isScreenWidthValid() && !mainFunctionRunning) {
+        mainFunctionRunning = true;
+        main();
+    } else if (!isScreenWidthValid() && mainFunctionRunning) {
+        mainFunctionRunning = false;
+        removeMain();
+    }
+}
+
+// create necessary elements
+const microphoneAnimation = document.createElement('style');
+const microphoneButton = document.createElement('button');
+const iconContainer = document.createElement('div');
+const microphoneSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+const microphonePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 
 
 // ----------------- MAIN FUNCTION ----------------- //
 
 
 async function main() {
+    console.log('main function running');
     // select the chatbox element and its parent
     const chatboxElement = document.querySelector('textarea[tabindex="0"]');
     const chatboxParentElement = chatboxElement.parentNode;
 
-    // add the microphone active styles to the page
-    const styleElement = document.createElement('style');
-    styleElement.innerHTML = `
+    // build the microphone active styles and append them to the DOM
+    microphoneAnimation.innerHTML = `
         .microphone-active::before {
             content: "";
             display: block;
@@ -61,31 +68,27 @@ async function main() {
             }
         }
     `;
-    document.head.appendChild(styleElement);
+    document.head.appendChild(microphoneAnimation);
 
 
     // ----------------- CREATING THE MICROPHONE BUTTON ----------------- //
 
 
     if (chatboxParentElement) {
-        // create the button element
-        const microphoneButton = document.createElement('button');
+        // build the button element
         microphoneButton.setAttribute('class', 'microphone-button absolute border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] hover:bg-gray-100 dark:hover:bg-gray-900');
         microphoneButton.setAttribute('style', 'right: -60px; bottom: 0; height: 50px; width: 50px; display: flex; align-items: center; justify-content: center; border-width: 1px; margin-bottom: -1px;');
 
-        // create the icon container
-        const iconContainer = document.createElement('div');
+        // build the icon container
         iconContainer.setAttribute('style', 'position: relative; width: 21px; height: 21px;');
 
-        // create the svg element
-        const microphoneSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        // build the svg element
         microphoneSVG.setAttribute('width', '21');
         microphoneSVG.setAttribute('height', '21');
         microphoneSVG.setAttribute('viewBox', '0 0 484.5 484.5');
         microphoneSVG.setAttribute('xml:space', 'preserve');
 
-        // create the path element
-        const microphonePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        // build the path element
         microphonePath.setAttribute('fill', '#8e8ea0');
         microphonePath.setAttribute('d', 'M242.25,306c43.35,0,76.5-33.15,76.5-76.5v-153c0-43.35-33.15-76.5-76.5-76.5c-43.35,0-76.5,33.15-76.5,76.5v153C165.75,272.85,198.9,306,242.25,306z M377.4,229.5c0,76.5-63.75,130.05-135.15,130.05c-71.4,0-135.15-53.55-135.15-130.05H63.75c0,86.7,68.85,158.1,153,170.85v84.15h51v-84.15c84.15-12.75,153-84.149,153-170.85H377.4L377.4,229.5z');
 
@@ -158,4 +161,42 @@ async function main() {
     }
 }
 
-main();
+
+// ----------------- HELPER FUNCTIONS ----------------- //
+
+
+// reload when navigating to a new page
+const navigationObserver = new MutationObserver((_, observer) => {
+    if (window.location.href !== observer.lastUrl) {
+        observer.lastUrl = window.location.href;
+        setTimeout(() => main(), 1000);
+    }
+});
+
+navigationObserver.observe(document.body, { childList: true, subtree: true });
+navigationObserver.lastUrl = window.location.href;
+
+// load sendMessageOnMicOff setting from storage
+async function sendMessageOnMicOff() {
+    return new Promise((resolve) => {
+        chrome.storage.sync.get('sendMessageOnMicOff', (result) => {
+            return resolve(result.sendMessageOnMicOff);
+        });
+    });
+}
+
+// remove the main function
+function removeMain() {
+    console.log('Removing main function...');
+    microphonePath.remove();
+    microphoneSVG.remove();
+    iconContainer.remove();
+    microphoneButton.remove();
+    microphoneAnimation.remove();
+}
+
+
+// ----------------- INITIALIZING THE SCRIPT ----------------- //
+
+
+runMain();
