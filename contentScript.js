@@ -149,9 +149,14 @@ async function main() {
         recognition.addEventListener('result', (event) => {
             const lastIndex = event.results.length - 1;
             const transcript = event.results[lastIndex][0].transcript;
-            // if speech recognition is final, append transcript to chatbox
+            // if speech recognition is final, insert transcript at cursor position
             if (event.results[lastIndex].isFinal) {
-                chatboxElement.value += transcript.trim() + ' ';
+                const cursorPosition = chatboxElement.selectionStart;
+                const value = chatboxElement.value;
+                chatboxElement.value = value.slice(0, cursorPosition) + transcript.trim() + ' ' + value.slice(cursorPosition);
+                // move cursor to the end of inserted text
+                chatboxElement.selectionStart = cursorPosition + transcript.trim().length + 1;
+                chatboxElement.selectionEnd = chatboxElement.selectionStart;
                 // manually trigger input event
                 const inputEvent = new Event('input', { bubbles: true });
                 chatboxElement.dispatchEvent(inputEvent);
