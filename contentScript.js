@@ -229,9 +229,11 @@ async function main() {
             'dash': '–',
             'ellipsis': '...'
         };
-        const words = text.split(' ');
-        const processedWords = words.map(word => punctuationMap[word.toLowerCase()] || word);
-        return processedWords.join(' ');
+        const regexPattern = new RegExp(`(?:^|\\s)(${Object.keys(punctuationMap).join('|')})(?=\\s|$)`, 'gi');
+        return text.replace(regexPattern, (match, p1) => {
+            const punctuation = punctuationMap[p1.toLowerCase()];
+            return punctuation ? punctuation : match;
+        });
     }
 
     // play audio tone
