@@ -54,7 +54,7 @@ body {
     font-size: 15px;
     font-weight: 600;
     text-transform: uppercase;
-    padding-bottom: 1.5px;
+    padding-bottom: 1px;
 }
 
 .feedback {
@@ -205,7 +205,7 @@ input:checked+.slider:before {
 }
 
 #onOffAudioVolume {
-    top: 4.5px;
+    top: 6.5px;
     left: 62.5px;
     width: 192px;
     -webkit-appearance: none;
@@ -213,7 +213,7 @@ input:checked+.slider:before {
     box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px .5px, rgb(209, 213, 219) 0px 0px 0px .5px inset;
     background-image: linear-gradient(to right, #27a532dd 50%, #ddd 50%);
     outline: none;
-    height: 12px;
+    height: 10px;
     border-radius: 8px;
 }
 
@@ -224,8 +224,8 @@ input:checked+.slider:before {
 #onOffAudioVolume::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 22px;
-    height: 22px;
+    width: 19.5px;
+    height: 19.5px;
     background: white;
     box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 0px .5px, rgb(209, 213, 219) 0px 0px 0px .5px inset;
     border-radius: 50%;
