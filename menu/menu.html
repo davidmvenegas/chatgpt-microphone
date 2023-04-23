@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ChatGPT Microphone</title>
+    <link rel="stylesheet" href="menu.css">
+</head>
+
+<body>
+    <div class="header">
+        <img src="/icon48.png" alt="ICON">
+        <h1>ChatGPT Microphone</h1>
+    </div>
+    <div class="menu-wrap">
+        <div class="shortcuts-section">
+            <h3 class="shortcuts-title">Shortcuts</h3>
+            <p class="shortcuts">Use <span id="command">CMD+M</span> on Mac, or <span id="command">CTR+M</span> on
+                Windows to toggle the
+                microphone.</p>
+        </div>
+        <div class="options-section">
+            <h3 class="options-title">Options</h3>
+            <div class="option">
+                <h3 class="option-description">Mic off sends message:</h3>
+                <label class="switch">
+                    <input type="checkbox" id="micOffSendsMessage">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="option">
+                <h3 class="option-description">Add space after speech:</h3>
+                <label class="switch">
+                    <input type="checkbox" id="addSpaceAfterSpeech">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <script src="menu.js"></script>
+</body>
+
+</html>

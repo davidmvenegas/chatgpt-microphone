@@ -146,14 +146,15 @@ async function main() {
 
 
         // append transcript to chatbox
-        recognition.addEventListener('result', (event) => {
+        recognition.addEventListener('result', async (event) => {
             const lastIndex = event.results.length - 1;
             const transcript = event.results[lastIndex][0].transcript;
             // if speech recognition is final, insert transcript at cursor position
             if (event.results[lastIndex].isFinal) {
+                const addSpace = await addSpaceAfterSpeech() ? ' ' : '';
                 const cursorPosition = chatboxElement.selectionStart;
                 const value = chatboxElement.value;
-                chatboxElement.value = value.slice(0, cursorPosition) + transcript.trim() + ' ' + value.slice(cursorPosition);
+                chatboxElement.value = value.slice(0, cursorPosition) + transcript.trim() + addSpace + value.slice(cursorPosition);
                 // move cursor to the end of inserted text
                 chatboxElement.selectionStart = cursorPosition + transcript.trim().length + 1;
                 chatboxElement.selectionEnd = chatboxElement.selectionStart;
@@ -251,6 +252,15 @@ async function sendMessageOnMicOff() {
     return new Promise((resolve) => {
         chrome.storage.sync.get('sendMessageOnMicOff', (result) => {
             return resolve(result.sendMessageOnMicOff);
+        });
+    });
+}
+
+// load addSpaceAfterSpeech setting from storage
+async function addSpaceAfterSpeech() {
+    return new Promise((resolve) => {
+        chrome.storage.sync.get('addSpaceAfterSpeech', (result) => {
+            return resolve(result.addSpaceAfterSpeech);
         });
     });
 }
