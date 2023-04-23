@@ -154,3 +154,45 @@ input:checked+.slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
+
+.volume-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+#onOffAudioVolume {
+    top: 2px;
+    left: 62.5px;
+    width: 192px;
+}
+
+#onOffAudioVolume {
+    top: 3px;
+    left: 62.5px;
+    width: 192px;
+    -webkit-appearance: none;
+    appearance: none;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px .5px, rgb(209, 213, 219) 0px 0px 0px .5px inset;
+    background-image: linear-gradient(to right, #27a532dd 50%, #ddd 50%);
+    outline: none;
+    height: 14px;
+    border-radius: 8px;
+}
+
+#onOffAudioVolume::before {
+    display: none;
+}
+
+#onOffAudioVolume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: white;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 0px .5px, rgb(209, 213, 219) 0px 0px 0px .5px inset;
+    border-radius: 50%;
+    cursor: pointer;
+}
