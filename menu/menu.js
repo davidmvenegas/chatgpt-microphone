@@ -55,7 +55,14 @@ function saveSettings() {
 // add event listeners
 document.getElementById('micOffSendsMessage').addEventListener('change', saveSettings);
 document.getElementById('onOffAudioFeedback').addEventListener('change', saveSettings);
-document.getElementById('onOffAudioVolume').addEventListener('input', saveSettings);
+document.getElementById('onOffAudioVolume').addEventListener('input', ((func, wait) => {
+    let timeout;
+    return function (...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+})(saveSettings, 100));
 
 // load settings on page load
 document.addEventListener('DOMContentLoaded', loadSettings);
