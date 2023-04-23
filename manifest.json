@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "ChatGPT Microphone",
-    "version": "1.0.4",
+    "version": "1.0.8",
     "description": "Adds a microphone to ChatGPT's text bar.",
     "icons": {
         "48": "icon48.png"

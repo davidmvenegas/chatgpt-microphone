@@ -23,7 +23,7 @@ We'd love for you to contribute to ChatGPT Microphone! Feel free to submit a pul
 
 ## Feedback
 
-Your feedback is invaluable to us! 💌 Share your thoughts, suggestions, or questions at venegasdavidm@gmail.com.
+Your feedback is invaluable to us! 💌 Send your thoughts, suggestions, or questions to venegasdavidm@gmail.com.
 Let's make ChatGPT Microphone the best it can be, together!
 
 ## License
