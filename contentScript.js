@@ -310,7 +310,7 @@ async function onOffAudioFeedback() {
 async function onOffAudioVolume() {
     return new Promise((resolve) => {
         chrome.storage.sync.get('onOffAudioVolume', (result) => {
-            return resolve(result.onOffAudioVolume);
+            return resolve(result.onOffAudioVolume) || 0;
         });
     });
 }
