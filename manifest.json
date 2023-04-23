@@ -20,7 +20,7 @@
         "storage"
     ],
     "action": {
-        "default_popup": "/options/options.html",
+        "default_popup": "/menu/menu.html",
         "default_icon": {
             "48": "icon48.png"
         }
