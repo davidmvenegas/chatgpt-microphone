@@ -1,32 +1,61 @@
-// add a transition to the slider after the initial load
+// add transition styles after initial load
 window.addEventListener('DOMContentLoaded', () => {
     const slider = document.querySelectorAll('.slider');
+    const onOffAudioVolume = document.getElementById('onOffAudioVolume');
     setTimeout(() => {
         slider.forEach((element) => element.classList.add('smooth-transition'));
+        onOffAudioVolume.addEventListener('input', () => updateSliderBackground(onOffAudioVolume));
     }, 100);
 });
 
-// Load settings from storage
+// update slider background
+function updateSliderBackground(slider) {
+    const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+    slider.style.backgroundImage = `linear-gradient(to right, #27a532 ${value}%, #ddd ${value}%)`;
+}
+
+// load settings from storage
 function loadSettings() {
-    chrome.storage.sync.get(['sendMessageOnMicOff', 'addSpaceAfterSpeech'], (result) => {
+    chrome.storage.sync.get(['sendMessageOnMicOff', 'onOffAudioFeedback', 'onOffAudioVolume'], (result) => {
         document.getElementById('micOffSendsMessage').checked = result.sendMessageOnMicOff;
-        document.getElementById('addSpaceAfterSpeech').checked = result.addSpaceAfterSpeech;
+        document.getElementById('onOffAudioFeedback').checked = result.onOffAudioFeedback;
+        document.getElementById('onOffAudioVolume').value = result.onOffAudioVolume;
+        const volumeOption = document.getElementById('volume-option');
+        if (!result.onOffAudioFeedback) {
+            volumeOption.style.display = 'none';
+        } else {
+            updateSliderBackground(document.getElementById('onOffAudioVolume'));
+        }
     });
 }
 
-// Save settings to storage
+// save settings to storage
 function saveSettings() {
     const sendMessageOnMicOffValue = document.getElementById('micOffSendsMessage').checked;
-    const addSpaceAfterSpeechValue = document.getElementById('addSpaceAfterSpeech').checked;
+    const onOffAudioFeedbackValue = document.getElementById('onOffAudioFeedback').checked;
+    let onOffAudioVolumeValue = document.getElementById('onOffAudioVolume').value;
+    if (!onOffAudioFeedbackValue) {
+        onOffAudioVolumeValue = 50;
+        document.getElementById('onOffAudioVolume').value = onOffAudioVolumeValue;
+        updateSliderBackground(document.getElementById('onOffAudioVolume'));
+    }
     chrome.storage.sync.set({
         sendMessageOnMicOff: sendMessageOnMicOffValue,
-        addSpaceAfterSpeech: addSpaceAfterSpeechValue
+        onOffAudioFeedback: onOffAudioFeedbackValue,
+        onOffAudioVolume: onOffAudioVolumeValue
     });
+    const volumeOption = document.getElementById('volume-option');
+    if (!onOffAudioFeedbackValue) {
+        volumeOption.style.display = 'none';
+    } else {
+        volumeOption.style.display = 'flex';
+    }
 }
 
-// Add event listener for the toggle switch
+// add event listeners
 document.getElementById('micOffSendsMessage').addEventListener('change', saveSettings);
-document.getElementById('addSpaceAfterSpeech').addEventListener('change', saveSettings);
+document.getElementById('onOffAudioFeedback').addEventListener('change', saveSettings);
+document.getElementById('onOffAudioVolume').addEventListener('input', saveSettings);
 
-// Load settings on page load
+// load settings on page load
 document.addEventListener('DOMContentLoaded', loadSettings);

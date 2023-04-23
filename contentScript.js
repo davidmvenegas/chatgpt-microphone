@@ -20,11 +20,9 @@ function isScreenWidthValid() {
 // run main function
 function runMain() {
     if (isScreenWidthValid() && !mainFunctionRunning) {
-        console.log('running main function...')
         mainFunctionRunning = true;
         main();
     } else if (!isScreenWidthValid() && mainFunctionRunning) {
-        console.log('removing main function...')
         mainFunctionRunning = false;
         removeMain();
     }
@@ -72,7 +70,6 @@ async function main() {
     // if speech recognition has ended but is supposed to still be active, restart it
     recognition.onend = () => {
         if (isRecognitionActive) {
-            console.log('restarting recognition...');
             setTimeout(() => recognition.start(), 100);
         }
     };
@@ -146,17 +143,19 @@ async function main() {
 
 
         // append transcript to chatbox
-        recognition.addEventListener('result', async (event) => {
+        recognition.addEventListener('result', (event) => {
             const lastIndex = event.results.length - 1;
-            const transcript = event.results[lastIndex][0].transcript;
+            const transcript = replacePunctuationWords(event.results[lastIndex][0].transcript);
             // if speech recognition is final, insert transcript at cursor position
             if (event.results[lastIndex].isFinal) {
-                const addSpace = await addSpaceAfterSpeech() ? ' ' : '';
-                const cursorPosition = chatboxElement.selectionStart;
+                // get cursor position and selection if any
+                const selectionStart = chatboxElement.selectionStart;
+                const selectionEnd = chatboxElement.selectionEnd;
+                // insert transcript at cursor position
                 const value = chatboxElement.value;
-                chatboxElement.value = value.slice(0, cursorPosition) + transcript.trim() + addSpace + value.slice(cursorPosition);
-                // move cursor to the end of inserted text
-                chatboxElement.selectionStart = cursorPosition + transcript.trim().length + 1;
+                chatboxElement.value = value.slice(0, selectionStart) + transcript.trim() + ' ' + value.slice(selectionEnd);
+                // move cursor to end of inserted text
+                chatboxElement.selectionStart = selectionStart + transcript.trim().length + 1;
                 chatboxElement.selectionEnd = chatboxElement.selectionStart;
                 // manually trigger input event
                 const inputEvent = new Event('input', { bubbles: true });
@@ -167,7 +166,6 @@ async function main() {
         // turn off speech recognition on submit
         chatboxElement.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                e.preventDefault();
                 turnOff(recognition);
                 isRecognitionActive = false;
             }
@@ -189,20 +187,14 @@ async function main() {
 
     // toggle speech recognition
     function toggleRecognition() {
-        console.log('isRecognitionActive: ' + isRecognitionActive)
-        if (isRecognitionActive) {
-            console.log('stopping recognition...')
-            turnOff(recognition);
-        } else {
-            console.log('starting recognition...')
-            turnOn(recognition);
-        }
+        isRecognitionActive ? turnOff(recognition) : turnOn(recognition);
         isRecognitionActive = !isRecognitionActive;
         chatboxElement.focus();
     }
 
     // turn microphone button on
     function turnOn(recognition) {
+        playAudioTone('ON');
         recognition.start();
         microphonePath.setAttribute('fill', '#f25c54');
         iconContainer.classList.add('GPT-microphone-active');
@@ -210,6 +202,9 @@ async function main() {
 
     // turn microphone button off
     async function turnOff(recognition) {
+        if (isRecognitionActive) {
+            playAudioTone('OFF');
+        }
         recognition.stop();
         microphonePath.setAttribute('fill', '#8e8ea0');
         iconContainer.classList.remove('GPT-microphone-active');
@@ -217,6 +212,50 @@ async function main() {
         if (await sendMessageOnMicOff()) {
             sendButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
         }
+    }
+
+    // replace punctuation words
+    function replacePunctuationWords(text) {
+        const punctuationMap = {
+            'comma': ',',
+            'period': '.',
+            'full stop': '.',
+            'semicolon': ';',
+            'colon': ':',
+            'question mark': '?',
+            'exclamation mark': '!',
+            'exclamation point': '!',
+            'hyphen': '-',
+            'dash': '–',
+            'ellipsis': '...'
+        };
+        const words = text.split(' ');
+        const processedWords = words.map(word => punctuationMap[word.toLowerCase()] || word);
+        return processedWords.join(' ');
+    }
+
+    // play audio tone
+    async function playAudioTone(toneType) {
+        if (!await onOffAudioFeedback()) return;
+        const userVolume = await onOffAudioVolume();
+        const audioContext = new AudioContext();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        // set on and off tone properties
+        const isTurningOn = toneType === 'ON';
+        const frequency = isTurningOn ? 400 : 300;
+        const duration = isTurningOn ? 0.4 : 0.35;
+        const volume = (isTurningOn ? 0.2 : 0.16) * userVolume / 100;
+        // set oscillator and gain node properties
+        oscillator.type = 'sine';
+        oscillator.frequency.value = frequency;
+        gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+        gainNode.gain.setTargetAtTime(0.0001, audioContext.currentTime + duration / 2.5, duration / 12);
+        // play tone
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
     }
 
     // assign toggleRecognition function to global scope
@@ -256,18 +295,26 @@ async function sendMessageOnMicOff() {
     });
 }
 
-// load addSpaceAfterSpeech setting from storage
-async function addSpaceAfterSpeech() {
+// load onOffAudioFeedback setting from storage
+async function onOffAudioFeedback() {
     return new Promise((resolve) => {
-        chrome.storage.sync.get('addSpaceAfterSpeech', (result) => {
-            return resolve(result.addSpaceAfterSpeech);
+        chrome.storage.sync.get('onOffAudioFeedback', (result) => {
+            return resolve(result.onOffAudioFeedback);
+        });
+    });
+}
+
+// load onOffAudioVolume setting from storage
+async function onOffAudioVolume() {
+    return new Promise((resolve) => {
+        chrome.storage.sync.get('onOffAudioVolume', (result) => {
+            return resolve(result.onOffAudioVolume);
         });
     });
 }
 
 // initialize observer to re-run main() if microphone button is not present
 function initObserver() {
-    console.log('Initializing observer...')
     const observer = new MutationObserver(
         debounce((mutations) => {
             for (const mutation of mutations) {
@@ -277,7 +324,6 @@ function initObserver() {
                     !document.querySelector('.GPT-microphone-button') &&
                     !scriptModifyingDOM
                 ) {
-                    console.log('Re-running main()...');
                     removeMain();
                     main();
                 }
@@ -289,7 +335,6 @@ function initObserver() {
 
 // remove main function
 function removeMain() {
-    console.log('Removing...');
     scriptModifyingDOM = true;
     if (recognition) {
         recognition.onend = null;
