@@ -2,9 +2,9 @@
 
 
 // state variables
-let mainFunctionRunning = false;
-let scriptModifyingDOM = false;
 let recognition = null;
+let scriptModifyingDOM = false;
+let mainFunctionRunning = false;
 let isRecognitionActive = false;
 let toggleRecognitionFunction = null;
 
@@ -13,16 +13,16 @@ window.addEventListener('resize', runMain);
 window.addEventListener('keydown', handleHotkey);
 
 // check if screen width is valid
-function isScreenWidthValid() {
+function isScreenSizeValid() {
     return window.innerWidth >= 1100;
 }
 
 // run main function
-function runMain() {
-    if (isScreenWidthValid() && !mainFunctionRunning) {
+async function runMain() {
+    if (isScreenSizeValid() && !mainFunctionRunning) {
         mainFunctionRunning = true;
         main();
-    } else if (!isScreenWidthValid() && mainFunctionRunning) {
+    } else if (!isScreenSizeValid() && mainFunctionRunning) {
         mainFunctionRunning = false;
         removeMain();
     }
@@ -67,7 +67,7 @@ async function main() {
     recognition.continuous = true;
     recognition.interimResults = true;
 
-    // if speech recognition has ended but is supposed to still be active, restart it
+    // if speech recognition times-out but is supposed to still be active, restart it
     recognition.onend = () => {
         if (isRecognitionActive) {
             setTimeout(() => recognition.start(), 100);
@@ -165,7 +165,7 @@ async function main() {
 
         // turn off speech recognition on submit
         chatboxElement.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) { // don't turn off if shift + enter
                 turnOff(recognition);
                 isRecognitionActive = false;
             }
@@ -186,11 +186,18 @@ async function main() {
 
 
     // toggle speech recognition
-    function toggleRecognition() {
+    async function toggleRecognition() {
+        const hasMicrophoneAccess = await checkMicrophoneAccess();
+        // stop if user has not granted microphone access
+        if (!hasMicrophoneAccess) {
+            alert("Microphone access not granted. Please allow access to use this feature.");
+            return;
+        }
         isRecognitionActive ? turnOff(recognition) : turnOn(recognition);
         isRecognitionActive = !isRecognitionActive;
         chatboxElement.focus();
     }
+
 
     // turn microphone button on
     function turnOn(recognition) {
@@ -227,7 +234,13 @@ async function main() {
             'exclamation point': '!',
             'hyphen': '-',
             'dash': '–',
-            'ellipsis': '...'
+            'ellipsis': '...',
+            'dot dot dot': '...',
+            'plus sign': '+',
+            'minus sign': '-',
+            'equals sign': '=',
+            'asterisk': '*',
+            'forward slash': '/',
         };
         const regexPattern = new RegExp(`(?:^|\\s)(${Object.keys(punctuationMap).join('|')})(?=\\s|$)`, 'gi');
         return text.replace(regexPattern, (match, p1) => {
@@ -264,17 +277,19 @@ async function main() {
     toggleRecognitionFunction = toggleRecognition;
 }
 
-
 // ----------------- SIDE EFFECTS ----------------- //
 
 
-// debounce function
-function debounce(func, wait) {
-    let timeout;
-    return (...args) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
+// check microphone access
+async function checkMicrophoneAccess() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // if user grants access, stop stream to release microphone
+        stream.getTracks().forEach((track) => track.stop());
+        return true;
+    } catch (error) {
+        return false;
+    }
 }
 
 // listen for hotkey
@@ -313,6 +328,15 @@ async function onOffAudioVolume() {
             return resolve(result.onOffAudioVolume) || 0;
         });
     });
+}
+
+// debounce function
+function debounce(func, wait) {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
 }
 
 // initialize observer to re-run main() if microphone button is not present
