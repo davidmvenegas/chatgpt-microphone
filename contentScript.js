@@ -33,11 +33,17 @@ async function runMain() {
 
 
 async function main() {
-    // select chatbox element and its parent
+    // select chatbox element
     const chatboxElement = document.querySelector('textarea[tabindex="0"]');
-    const chatboxParentElement = chatboxElement.parentNode;
 
-    // select send button
+    // check if chatbox element exists
+    if (!chatboxElement) {
+        console.warn('Could not find chatbox element.');
+        return;
+    }
+
+    // select chatbox parent element and send button
+    const chatboxParentElement = chatboxElement.parentNode;
     const sendButton = chatboxParentElement.querySelector('button:nth-child(2)');
 
     // create necessary elements
@@ -145,7 +151,9 @@ async function main() {
         // append transcript to chatbox
         recognition.addEventListener('result', (event) => {
             const lastIndex = event.results.length - 1;
-            const transcript = replacePunctuationWords(event.results[lastIndex][0].transcript);
+            const previousText = chatboxElement.value.slice(0, chatboxElement.selectionStart);
+            const transcript = event.results[lastIndex][0].transcript.trim();
+            const processedTranscript = processTranscript(previousText, transcript);
             // if speech recognition is final, insert transcript at cursor position
             if (event.results[lastIndex].isFinal) {
                 // get cursor position and selection if any
@@ -153,9 +161,9 @@ async function main() {
                 const selectionEnd = chatboxElement.selectionEnd;
                 // insert transcript at cursor position
                 const value = chatboxElement.value;
-                chatboxElement.value = value.slice(0, selectionStart) + transcript.trim() + ' ' + value.slice(selectionEnd);
+                chatboxElement.value = value.slice(0, selectionStart) + processedTranscript + value.slice(selectionEnd);
                 // move cursor to end of inserted text
-                chatboxElement.selectionStart = selectionStart + transcript.trim().length + 1;
+                chatboxElement.selectionStart = selectionStart + processedTranscript.length;
                 chatboxElement.selectionEnd = chatboxElement.selectionStart;
                 // manually trigger input event
                 const inputEvent = new Event('input', { bubbles: true });
@@ -198,7 +206,6 @@ async function main() {
         chatboxElement.focus();
     }
 
-
     // turn microphone button on
     function turnOn(recognition) {
         playAudioTone('ON');
@@ -221,32 +228,43 @@ async function main() {
         }
     }
 
-    // replace punctuation words
-    function replacePunctuationWords(text) {
+    // process voice transcript
+    function processTranscript(previousText, text) {
         const punctuationMap = {
+            'colon': ':',
             'comma': ',',
             'period': '.',
-            'full stop': '.',
+            'new line': '\n',
+            'ellipsis': '...',
+            'ellipses': '...',
+            'next line': '\n',
             'semicolon': ';',
-            'colon': ':',
+            'full stop': '.',
             'question mark': '?',
             'exclamation mark': '!',
             'exclamation point': '!',
-            'hyphen': '-',
-            'dash': '–',
-            'ellipsis': '...',
-            'dot dot dot': '...',
-            'plus sign': '+',
-            'minus sign': '-',
-            'equals sign': '=',
-            'asterisk': '*',
-            'forward slash': '/',
         };
-        const regexPattern = new RegExp(`(?:^|\\s)(${Object.keys(punctuationMap).join('|')})(?=\\s|$)`, 'gi');
-        return text.replace(regexPattern, (match, p1) => {
+        // capitalize first word if chatbox is empty or last character is ".", "!", "?", or newline
+        if (previousText.length === 0 || /[.!?]$/.test(previousText.trim()) || previousText.slice(-1) === '\n') {
+            text = text.charAt(0).toUpperCase() + text.slice(1);
+        }
+        // add a space to start if chatbox is not empty and last character is not a newline
+        if (previousText.length > 0 && previousText.slice(-1) !== '\n') {
+            text = ' ' + text;
+        }
+        // replace any punctuation words with actual punctuation
+        const regexPattern = new RegExp(`\\b(${Object.keys(punctuationMap).join('|')})\\b`, 'gi');
+        let newText = text.replace(regexPattern, (match, p1) => {
             const punctuation = punctuationMap[p1.toLowerCase()];
             return punctuation ? punctuation : match;
         });
+        // capitalize words following ".", "!", "?"
+        newText = newText.replace(/([.!?])\s*(\w)/g, (_, p1, p2) => {
+            return p1 + ' ' + p2.toUpperCase();
+        });
+        // remove whitespace before punctuation
+        newText = newText.replace(/\s+([,.!?:])/g, '$1');
+        return newText;
     }
 
     // play audio tone
