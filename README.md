@@ -4,8 +4,8 @@ ChatGPT Microphone is an essential upgrade to your ChatGPT experience. This butt
 
 ## Features
 
-- 🗣️ **Voice-to-text**: Click the button (or CMD/CTR + M) and start speaking.
-- 💬 **Seamless fit**: Built for ChatGPT, ensuring a flawless experience.
+- 🗣️ **Voice-to-text**: Just click the button (or press CMD/CTR + M) and start speaking.
+- 💬 **Seamless fit**: Designed exclusively for ChatGPT, guaranteeing a flawless experience.
 - 🎨 **Dark/Light mode**: Perfectly matches ChatGPT's Dark and Light mode.
 - 💰 **Completely FREE**: Enjoy all benefits of ChatGPT Microphone at no cost.
 
