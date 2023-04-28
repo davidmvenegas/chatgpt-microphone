@@ -1,6 +1,6 @@
 # ChatGPT Microphone
 
-ChatGPT Microphone is the perfect addition to your ChatGPT experience. This button blends perfectly with the site, enabling easy speech input and eliminating the need to type everything. Unlock the full potential of ChatGPT and elevate your conversations to a new level of smoothness and speed!
+ChatGPT Microphone is an essential upgrade to your ChatGPT experience. This button blends perfectly with the site, enabling easy speech input and eliminating the need to type everything. Unlock the full potential of ChatGPT and elevate your conversations to a new level of smoothness and speed!
 
 ## Features
 
