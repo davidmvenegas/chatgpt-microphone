@@ -1,14 +1,14 @@
 # ChatGPT Microphone
 
-ChatGPT Microphone is a sleek and seamless Chrome extension designed to enhance your ChatGPT experience. This button blends perfectly with the site, allowing you to effortlessly speak your thoughts instead of typing them out.
+ChatGPT Microphone is a sleek and seamless addition to your ChatGPT experience on Chrome. This button blends perfectly with the site, enabling easy speech input and eliminating the need to type everything. Unlock the full potential of ChatGPT and elevate your conversations to a new level of smoothness and speed!
 
 ## Features
 
-- 🗣️ **Voice-to-text input**: Forget tedious typing; simply click the microphone (or press CMD/CTR + M) and start speaking.
-- 💬 **Seamless integration**: Designed to work seamlessly with ChatGPT for smooth and efficient voice communication.
-- 🌐 **Chrome compatibility**: Exclusively crafted for Chrome, ensuring a flawless user experience.
-- 🎨 **Dark/Light mode**: Perfectly matches ChatGPT's Dark and Light mode for a harmonious appearance.
-- 💰 **Completely FREE**: Enjoy all the benefits of ChatGPT Microphone at no cost.
+- 🗣️ **Voice-to-text**: Click microphone (or CMD/CTR + M) and start speaking.
+- 💬 **Seamless fit**: Built for ChatGPT, ensuring smooth voice communication.
+- 🌐 **Chrome compatibility**: Made for Chrome, ensuring flawless experience.
+- 🎨 **Dark/Light mode**: Perfectly matches ChatGPT's Dark and Light mode.
+- 💰 **Completely FREE**: Enjoy all benefits of ChatGPT Microphone at no cost.
 
 ## Dev Installation
 
