@@ -14,12 +14,12 @@
     align-items: center;
     justify-content: flex-start;
     flex-direction: column;
-    background-color: rgba(0, 0, 0, 0.865);
     overflow-x: hidden;
 }
 
 .snippets {
-    padding: 120px 0px;
+    width: 100%;
+    padding: 120px 80px;
 }
 
 .snippets-header {
@@ -67,16 +67,35 @@
 .table {
     display: flex;
     flex-direction: column;
-    width: 750px;
+    max-width: 1050px;
+    width: 100%;
+    min-width: 750px;
     margin-bottom: 1.6rem;
-    box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
+    box-shadow: rgba(50, 50, 93, 0.2) 0px 2px 5px -1px, rgba(0, 0, 0, 0.2) 0px 1px 3px -1px;
     border-radius: 8px;
-    overflow: hidden;
 }
 
 .row {
+    position: relative;
     display: flex;
-    border-bottom: 1px solid #d0d0d0;
+    overflow: visible;
+    border-bottom: 1px solid #ddd;
+}
+
+.row:first-child .cell:first-of-type {
+    border-top-left-radius: 8px;
+}
+
+.row:first-child .cell:last-of-type {
+    border-top-right-radius: 8px;
+}
+
+.row:last-child .cell:first-of-type {
+    border-bottom-left-radius: 8px;
+}
+
+.row:last-child .cell:last-of-type {
+    border-bottom-right-radius: 8px;
 }
 
 .row:last-of-type {
@@ -84,7 +103,7 @@
 }
 
 .row.header .cell {
-    background-color: #eee;
+    background-color: #6B728020;
 }
 
 .cell {
@@ -95,14 +114,14 @@
 }
 
 .cell:first-of-type {
-    width: 35%;
-    max-width: 35%;
-    border-right: 1px solid #d0d0d0;
+    width: 32.5%;
+    max-width: 32.5%;
+    border-right: 1px solid #ddd;
 }
 
 .cell:last-of-type {
-    width: 65%;
-    max-width: 65%;
+    width: 67.5%;
+    max-width: 67.5%;
 }
 
 .table-header {
@@ -115,21 +134,15 @@
 }
 
 .table-header>span:first-of-type {
-    color: #444;
+    color: #5f5f5f;
     font-size: 20px;
+    font-weight: 600;
 }
 
 .table-header>span:last-of-type {
     color: #999;
     font-size: 15px;
     font-weight: 400;
-}
-
-.delete-icon {
-    position: absolute;
-    left: -30px;
-    cursor: pointer;
-    display: none;
 }
 
 .auto-grow {
@@ -149,6 +162,25 @@
     word-wrap: break-word;
 }
 
+.delete-icon {
+    position: absolute;
+    display: none;
+    top: 50%;
+    left: -35px;
+    height: 24px;
+    width: 24px;
+    animation: jiggle .5s linear infinite;
+    transition: all .2s ease-in-out;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.delete-icon:hover {
+    animation: none;
+    animation: jiggle-stop .125s linear forwards;
+    transform: translateY(-50%) rotate(0deg) scale(1.125);
+}
+
 /* ----------------- BUTTONS ----------------- */
 
 .button-wrap {
@@ -156,7 +188,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 1px;
+    max-width: 1050px;
     width: 100%;
+    min-width: 750px;
 }
 
 .add-new-button,
@@ -171,7 +205,7 @@
     font-size: 16.5px;
     font-weight: 500;
     border-radius: 6px;
-    box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
+    box-shadow: rgba(50, 50, 93, 0.2) 0px 2px 5px -1px, rgba(0, 0, 0, 0.2) 0px 1px 3px -1px;
     cursor: pointer;
 }
 
@@ -185,10 +219,10 @@
 
 .add-new-button>span {
     position: relative;
-    font-size: 22px;
+    font-size: 21px;
     font-weight: 500;
     line-height: .5;
-    top: 2.5px;
+    top: 2px;
     left: 2px;
 }
 
@@ -215,17 +249,49 @@
     right: 38px;
     border: none;
     outline: none;
-    color: #6B7280;
-    font-size: 4rem;
-    font-weight: 500;
-    padding: 2px 1px 0;
-    line-height: .6;
-    border-radius: 6px;
     background-color: transparent;
-    transition: all .2s ease-in-out;
     cursor: pointer;
+    padding: 0;
 }
 
-.close-snippets-button:hover {
-    transform: rotate(90deg);
+.close-snippets-button>img {
+    width: 27.5px;
+    height: 27.5px;
+    transition: all .2s ease-in-out;
+}
+
+.close-snippets-button>img:hover {
+    transform: rotate(-90deg);
+}
+
+@keyframes jiggle {
+    0% {
+        transform: translateY(-50%) rotate(-4deg) scale(1.025);
+    }
+
+    25% {
+        transform: translateY(-50%) rotate(4deg) scale(1.025);
+    }
+
+    50% {
+        transform: translateY(-50%) rotate(-4deg) scale(1);
+    }
+
+    75% {
+        transform: translateY(-50%) rotate(4deg) scale(1);
+    }
+
+    100% {
+        transform: translateY(-50%) rotate(-4deg) scale(1.025);
+    }
+}
+
+@keyframes jiggle-stop {
+    0% {
+        transform: translateY(-50%) rotate(0deg) scale(1);
+    }
+
+    100% {
+        transform: translateY(-50%) rotate(0deg) scale(1.1);
+    }
 }
