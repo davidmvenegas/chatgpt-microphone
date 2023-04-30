@@ -8,7 +8,7 @@
 
 <body>
     <div class="header">
-        <img src="/icon48.png" alt="ICON">
+        <img src="/assets/icon48.png" alt="ICON">
         <h1>ChatGPT Microphone</h1>
     </div>
     <div class="menu-wrap">
@@ -23,20 +23,21 @@
             <p class="shortcuts">Use <span id="command">CMD+M</span> on Mac, or <span id="command">CTR+M</span> on
                 Windows to toggle the
                 microphone.</p>
+            <button class="manage-snippets" id="openSnippetsTab">Manage Snippets</button>
         </div>
         <div class="options-section">
             <h3 class="options-title">Options</h3>
             <div class="option">
-                <h3 class="option-description">Turning mic off submits:</h3>
+                <h3 class="option-description">Sound on/off:</h3>
                 <label class="switch">
-                    <input type="checkbox" id="micOffSendsMessage">
+                    <input type="checkbox" id="onOffAudioFeedback">
                     <span class="slider round"></span>
                 </label>
             </div>
             <div class="option">
-                <h3 class="option-description">Sound on/off notification:</h3>
+                <h3 class="option-description">Turning off submits:</h3>
                 <label class="switch">
-                    <input type="checkbox" id="onOffAudioFeedback">
+                    <input type="checkbox" id="micOffSendsMessage">
                     <span class="slider round"></span>
                 </label>
             </div>

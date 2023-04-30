@@ -103,6 +103,24 @@ body {
     color: #27a532;
 }
 
+.manage-snippets {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    width: 100%;
+    height: 34px;
+    border: none;
+    border-radius: 6px;
+    background-color: #27a532;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    margin-top: 2.5px;
+    cursor: pointer;
+}
+
+.manage-snippets:hover {
+    background-color: #27a532EE;
+}
+
 .options-section {
     display: flex;
     align-items: flex-start;

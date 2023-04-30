@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ChatGPT Microphone</title>
+    <link rel="stylesheet" href="snippets.css">
+    <link rel="icon" href="../assets/icon48.png" type="image/png">
+</head>
+
+<body id="snippets-body">
+    <div class="snippets">
+        <div class="snippets-header">
+            <div class="snippets-title">
+                <img src="/assets/icon48.png" alt="ICON">
+                <h1>Shortcut Snippets</h1>
+            </div>
+            <p class="snippets-description">Voice shortcuts that auto-replace with custom text snippets.</p>
+        </div>
+        <div class="snippets-container">
+            <div class="table" id="snippetsTable">
+                <div class="row header">
+                    <div class="cell">
+                        <div class="table-header">
+                            <span>Shortcut</span>
+                            <span>When I say this...</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <div class="table-header">
+                            <span>Snippet</span>
+                            <span>...replace it with this.</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- NEW ROWS WILL BE INSERTED HERE -->
+            </div>
+            <div class="button-wrap">
+                <div class="left">
+                    <button class="add-new-button" id="addNewSnippet">New <span>&plus;</span></button>
+                </div>
+                <div class="right">
+                    <button class="edit-button" id="editSnippets">Edit</button>
+                    <button class="save-button" id="saveSnippets">Save</button>
+                </div>
+            </div>
+        </div>
+        <button class="close-snippets-button" id="closeSnippets">&times;</button>
+    </div>
+    <script src="snippets.js"></script>
+</body>
+
+</html>

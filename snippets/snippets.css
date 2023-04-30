@@ -1,0 +1,231 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+#snippets-body {
+    position: relative;
+    font-family: Arial, sans-serif;
+    width: 100vw;
+    height: 100vh;
+    min-width: 850px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.865);
+    overflow-x: hidden;
+}
+
+.snippets {
+    padding: 120px 0px;
+}
+
+.snippets-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 38px;
+}
+
+.snippets-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
+.snippets-title>h1 {
+    color: #6B7280;
+    font-size: 40px;
+}
+
+.snippets-title>img {
+    width: 45px;
+    height: 45px;
+    margin-bottom: 1px;
+}
+
+.snippets-description {
+    color: #6B7280;
+    font-size: 19px;
+    font-style: italic;
+}
+
+.snippets-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 100px;
+}
+
+/* ----------------- TABLE ----------------- */
+
+.table {
+    display: flex;
+    flex-direction: column;
+    width: 750px;
+    margin-bottom: 1.6rem;
+    box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.row {
+    display: flex;
+    border-bottom: 1px solid #d0d0d0;
+}
+
+.row:last-of-type {
+    border-bottom: none;
+}
+
+.row.header .cell {
+    background-color: #eee;
+}
+
+.cell {
+    position: relative;
+    padding: 10px 8px;
+    text-align: left;
+    background-color: white;
+}
+
+.cell:first-of-type {
+    width: 35%;
+    max-width: 35%;
+    border-right: 1px solid #d0d0d0;
+}
+
+.cell:last-of-type {
+    width: 65%;
+    max-width: 65%;
+}
+
+.table-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 1px 0 2px;
+    gap: 5px;
+}
+
+.table-header>span:first-of-type {
+    color: #444;
+    font-size: 20px;
+}
+
+.table-header>span:last-of-type {
+    color: #999;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.delete-icon {
+    position: absolute;
+    left: -30px;
+    cursor: pointer;
+    display: none;
+}
+
+.auto-grow {
+    font-family: 'Arial', sans-serif;
+    font-size: 17px;
+    padding: 4px 8px;
+    width: 100%;
+    min-height: 100%;
+    max-height: none;
+    text-align: left;
+    border: none;
+    outline: none;
+    resize: none;
+    overflow-wrap: break-word;
+    overflow-y: hidden;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* ----------------- BUTTONS ----------------- */
+
+.button-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1px;
+    width: 100%;
+}
+
+.add-new-button,
+.edit-button,
+.save-button {
+    border: none;
+    color: white;
+    padding: 9px 28px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16.5px;
+    font-weight: 500;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
+    cursor: pointer;
+}
+
+.add-new-button {
+    background-color: #6B7280;
+}
+
+.add-new-button:hover {
+    background-color: #6B7280ee;
+}
+
+.add-new-button>span {
+    position: relative;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: .5;
+    top: 2.5px;
+    left: 2px;
+}
+
+.edit-button {
+    background-color: #EF4444;
+    margin-right: 10px;
+}
+
+.edit-button:hover {
+    background-color: #EF4444ee;
+}
+
+.save-button {
+    background-color: #4CAF50;
+}
+
+.save-button:hover {
+    background-color: #4CAF50ee;
+}
+
+.close-snippets-button {
+    position: absolute;
+    top: 35px;
+    right: 38px;
+    border: none;
+    outline: none;
+    color: #6B7280;
+    font-size: 4rem;
+    font-weight: 500;
+    padding: 2px 1px 0;
+    line-height: .6;
+    border-radius: 6px;
+    background-color: transparent;
+    transition: all .2s ease-in-out;
+    cursor: pointer;
+}
+
+.close-snippets-button:hover {
+    transform: rotate(90deg);
+}

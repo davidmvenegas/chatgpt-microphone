@@ -1,10 +1,10 @@
 {
     "manifest_version": 3,
     "name": "ChatGPT Microphone",
-    "version": "1.1.1",
-    "description": "Adds a microphone button to ChatGPT",
+    "version": "1.2.0",
+    "description": "Add a microphone and shortcut snippets to ChatGPT",
     "icons": {
-        "48": "icon48.png"
+        "48": "/assets/icon48.png"
     },
     "content_scripts": [
         {
@@ -22,7 +22,7 @@
     "action": {
         "default_popup": "/menu/menu.html",
         "default_icon": {
-            "48": "icon48.png"
+            "48": "/assets/icon48.png"
         }
     }
 }

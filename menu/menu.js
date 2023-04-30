@@ -52,12 +52,17 @@ function saveSettings() {
     }
 }
 
+// open snippets tab
+document.getElementById('openSnippetsTab').addEventListener('click', () => {
+    chrome.tabs.create({ url: 'snippets/snippets.html' });
+});
+
 // add event listeners
 document.getElementById('micOffSendsMessage').addEventListener('change', saveSettings);
 document.getElementById('onOffAudioFeedback').addEventListener('change', saveSettings);
 document.getElementById('onOffAudioVolume').addEventListener('input', ((func, wait) => {
     let timeout;
-    return function (...args) {
+    return (...args) => {
         const context = this;
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(context, args), wait);
