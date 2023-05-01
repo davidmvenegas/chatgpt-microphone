@@ -75,35 +75,44 @@
     border-radius: 8px;
 }
 
-.row {
+.header-row {
     position: relative;
     display: flex;
-    overflow: visible;
     border-bottom: 1px solid #ddd;
+    overflow: visible;
 }
 
-.row:first-child .cell:first-of-type {
+.header-row .cell {
+    background-color: #6B728020;
+}
+
+.header-row:first-child .cell:first-of-type {
     border-top-left-radius: 8px;
 }
 
-.row:first-child .cell:last-of-type {
+.header-row:first-child .cell:last-of-type {
     border-top-right-radius: 8px;
 }
 
-.row:last-child .cell:first-of-type {
+.snippet-row {
+    position: relative;
+    display: flex;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom: 1px solid #ddd;
+    overflow: visible;
+}
+
+.snippet-row:last-child .cell:first-of-type {
     border-bottom-left-radius: 8px;
 }
 
-.row:last-child .cell:last-of-type {
+.snippet-row:last-child .cell:last-of-type {
     border-bottom-right-radius: 8px;
 }
 
-.row:last-of-type {
+.snippet-row:last-of-type {
     border-bottom: none;
-}
-
-.row.header .cell {
-    background-color: #6B728020;
 }
 
 .cell {
@@ -122,6 +131,10 @@
 .cell:last-of-type {
     width: 67.5%;
     max-width: 67.5%;
+}
+
+.deleted-cell {
+    background-color: #ffe7e7;
 }
 
 .table-header {
@@ -166,9 +179,9 @@
     position: absolute;
     display: none;
     top: 50%;
-    left: -35px;
-    height: 24px;
-    width: 24px;
+    left: -32.5px;
+    height: 22px;
+    width: 22px;
     animation: jiggle .5s linear infinite;
     transition: all .2s ease-in-out;
     cursor: pointer;
@@ -176,9 +189,11 @@
 }
 
 .delete-icon:hover {
-    animation: none;
     animation: jiggle-stop .125s linear forwards;
-    transform: translateY(-50%) rotate(0deg) scale(1.125);
+}
+
+.delete-icon:active {
+    animation: jiggle-active .1s linear forwards;
 }
 
 /* ----------------- BUTTONS ----------------- */
@@ -193,9 +208,11 @@
     min-width: 750px;
 }
 
-.add-new-button,
 .edit-button,
-.save-button {
+.save-button,
+.add-new-button,
+.save-new-button,
+.cancel-new-button {
     border: none;
     color: white;
     padding: 9px 28px;
@@ -226,20 +243,32 @@
     left: 2px;
 }
 
+.cancel-new-button {
+    display: none;
+}
+
+.cancel-new-button,
 .edit-button {
     background-color: #EF4444;
     margin-right: 10px;
 }
 
+.cancel-new-button:hover,
 .edit-button:hover {
     background-color: #EF4444ee;
 }
 
-.save-button {
+.save-new-button {
+    display: none;
+}
+
+.save-button,
+.save-new-button {
     background-color: #4CAF50;
 }
 
-.save-button:hover {
+.save-button:hover,
+.save-new-button:hover {
     background-color: #4CAF50ee;
 }
 
@@ -293,5 +322,15 @@
 
     100% {
         transform: translateY(-50%) rotate(0deg) scale(1.1);
+    }
+}
+
+@keyframes jiggle-active {
+    0% {
+        transform: translateY(-50%) rotate(0deg) scale(1.1);
+    }
+
+    100% {
+        transform: translateY(-50%) rotate(0deg) scale(.975);
     }
 }
