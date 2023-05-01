@@ -2,22 +2,23 @@ document.getElementById('closeSnippets').addEventListener('click', () => {
     window.close();
 });
 
+
 // state variables
 let isEditing = false;
-let isAddingNew = false;
 let deletedRowsQueue = [];
+const changedCells = new Set();
+
 
 // select elements
 const tableContainer = document.getElementById('snippetsTable');
-const cancelNewButton = document.getElementById('cancelNewSnippet');
-const saveNewButton = document.getElementById('saveNewSnippet');
 const addNewButton = document.getElementById('addNewSnippet');
 const editButton = document.getElementById('editSnippets');
 const saveButton = document.getElementById('saveSnippets');
 const deleteIcons = document.getElementsByClassName('delete-icon');
 
+
 // create new row
-function createNewRow(fromExistingData) {
+function createNewRow() {
     const newRow = document.createElement('div');
     newRow.classList.add('snippet-row');
     newRow.innerHTML = `
@@ -26,35 +27,21 @@ function createNewRow(fromExistingData) {
         <img src="../assets/delete.svg" class="delete-icon" />
     `;
     tableContainer.appendChild(newRow);
-    // add paste, input, and delete event listeners
+    // select elements
     const shortcutCell = newRow.querySelector('.SS_shortcut');
     const snippetCell = newRow.querySelector('.SS_snippet');
-    snippetCell.addEventListener('paste', cleanPastedText);
+    const deleteIcon = newRow.querySelector('.delete-icon');
+    // add paste/change/delete event listeners
     shortcutCell.addEventListener('paste', cleanPastedText);
-    snippetCell.addEventListener('input', handleCellInput);
-    shortcutCell.addEventListener('input', handleCellInput);
-    newRow.querySelector('.delete-icon').addEventListener('click', handleDeleteClick);
-    if (!fromExistingData) {
-        editButton.style.display = 'none';
-        saveButton.style.display = 'none';
-        addNewButton.style.display = 'none';
-        cancelNewButton.style.display = 'inline-block';
-        saveNewButton.style.display = 'inline-block';
-        newRow.querySelector('.SS_shortcut').focus();
-        isAddingNew = true;
-    }
+    shortcutCell.addEventListener('input', handleTextChange);
+    snippetCell.addEventListener('paste', cleanPastedText);
+    snippetCell.addEventListener('input', handleTextChange);
+    deleteIcon.addEventListener('click', handleDeleteClick);
+    // add original text attribute
+    shortcutCell.setAttribute('data-original-text', shortcutCell.innerText);
+    snippetCell.setAttribute('data-original-text', snippetCell.innerText);
 }
 
-// cancel new row
-function cancelNewRow() {
-    tableContainer.removeChild(tableContainer.lastChild);
-    editButton.style.display = 'inline-block';
-    saveButton.style.display = 'inline-block';
-    addNewButton.style.display = 'inline-block';
-    cancelNewButton.style.display = 'none';
-    saveNewButton.style.display = 'none';
-    isAddingNew = false;
-}
 
 // clean pasted text
 function cleanPastedText(e) {
@@ -70,7 +57,8 @@ function cleanPastedText(e) {
     selection.addRange(range);
 }
 
-// save new row
+
+// save new row -> TODO: use this in modal
 function saveNewRow() {
     const newShortcut = tableContainer.lastChild.querySelector('.SS_shortcut').innerText;
     const newSnippet = tableContainer.lastChild.querySelector('.SS_snippet').innerText;
@@ -81,26 +69,11 @@ function saveNewRow() {
             snippet: newSnippet
         });
         chrome.storage.sync.set({ snippetsData: snippetsData }, () => {
-            editButton.style.display = 'inline-block';
-            saveButton.style.display = 'inline-block';
-            addNewButton.style.display = 'inline-block';
-            cancelNewButton.style.display = 'none';
-            saveNewButton.style.display = 'none';
-            editButton.disabled = false;
-            saveButton.disabled = false;
-            isAddingNew = false;
+            saveButton.disabled = true;
         });
     });
 }
 
-// toggle editing
-function toggleEditing() {
-    if (isEditing) {
-        endEditing(false);
-    } else {
-        startEditing();
-    }
-}
 
 // start editing
 function startEditing() {
@@ -113,20 +86,51 @@ function startEditing() {
     isEditing = true;
 }
 
-// handle cell input
-function handleCellInput(e) {
-    const cell = e.target.parentNode;
-    if (cell.innerText === '') {
-        cell.classList.add('empty-cell');
-    } else {
-        cell.classList.remove('empty-cell');
+
+// end editing
+function endEditing(saveChanges) {
+    editButton.innerText = 'Edit';
+    saveButton.innerText = 'Save';
+    addNewButton.style.display = 'inherit';
+    for (let i = 0; i < deleteIcons.length; i++) {
+        deleteIcons[i].style.display = 'none';
     }
+    if (saveChanges) {
+        // if saving changes, delete rows in queue
+        deletedRowsQueue.forEach(row => row.element.remove());
+    } else {
+        // else, return rows in queue to normal
+        deletedRowsQueue.forEach(row => {
+            row.element.children[0].classList.remove('deleted-cell');
+            row.element.children[1].classList.remove('deleted-cell');
+        });
+        deletedRowsQueue = [];
+    }
+    saveButton.disabled = true;
+    isEditing = false;
 }
+
+
+// handle text change
+function handleTextChange(e) {
+    const cell = e.target;
+    const cellIndex = Array.from(cell.parentNode.parentNode.children).indexOf(cell.parentNode);
+    const originalText = cell.getAttribute('data-original-text');
+    const currentText = cell.innerText;
+    if (originalText !== currentText) {
+        cell.parentNode.classList.add('changed-cell');
+        changedCells.add(cellIndex);
+    } else {
+        cell.parentNode.classList.remove('changed-cell');
+        changedCells.delete(cellIndex);
+    }
+    saveButton.disabled = changedCells.size === 0;
+}
+
 
 // handle delete click
 function handleDeleteClick(e) {
     const rowToDelete = e.target.parentNode;
-    const rowIndex = Array.from(tableContainer.children).indexOf(rowToDelete);
     const shortcutValue = rowToDelete.querySelector('.SS_shortcut').innerText;
     const isDeleted = deletedRowsQueue.some(row => row.shortcut === shortcutValue);
     const shortcutCell = rowToDelete.children[0];
@@ -138,31 +142,11 @@ function handleDeleteClick(e) {
     } else {
         shortcutCell.classList.add('deleted-cell');
         snippetCell.classList.add('deleted-cell');
-        deletedRowsQueue.push({ element: rowToDelete, rowIndex: rowIndex, shortcut: shortcutValue });
+        deletedRowsQueue.push({ element: rowToDelete, shortcut: shortcutValue });
     }
+    saveButton.disabled = deletedRowsQueue.length === 0;
 }
 
-// end editing
-function endEditing(saveChanges) {
-    editButton.innerText = 'Edit';
-    saveButton.innerText = 'Save';
-    addNewButton.style.display = 'inherit';
-    for (let i = 0; i < deleteIcons.length; i++) {
-        deleteIcons[i].style.display = 'none';
-    }
-    // if saving changes, delete rows marked for deletion
-    if (saveChanges) {
-        deletedRowsQueue.forEach(row => row.element.remove());
-    } else {
-        // else, return deleted rows to normal state
-        deletedRowsQueue.forEach(row => {
-            row.element.children[0].classList.remove('deleted-cell');
-            row.element.children[1].classList.remove('deleted-cell');
-        });
-        deletedRowsQueue = [];
-    }
-    isEditing = false;
-}
 
 // save data
 function saveData() {
@@ -172,7 +156,7 @@ function saveData() {
     const snippetsData = [];
     for (let i = 0; i < shortcuts.length; i++) {
         const shortcutValue = shortcuts[i].innerText;
-        // only include rows that are not marked for deletion
+        // only save rows NOT marked for deletion
         if (!deletedRowsQueue.some(row => row.shortcut === shortcutValue)) {
             snippetsData.push({
                 shortcut: shortcutValue,
@@ -180,33 +164,38 @@ function saveData() {
             });
         }
     }
-    deletedRowsQueue = [];
     chrome.storage.sync.set({ snippetsData: snippetsData }, () => {
-        // if no data, create a starting row
-        if (snippetsData.length === 0) {
-            editButton.disabled = true;
-            saveButton.disabled = true;
-            createNewRow(false);
-        }
+        saveButton.disabled = true;
+        editButton.disabled = snippetsData.length === 0;
     });
+    // update data-original-text for each cell
+    for (let i = 0; i < shortcuts.length; i++) {
+        const shortcutValue = shortcuts[i].innerText;
+        // only include rows that are not marked for deletion
+        if (!deletedRowsQueue.some(row => row.shortcut === shortcutValue)) {
+            shortcuts[i].setAttribute('data-original-text', shortcutValue);
+            snippets[i].setAttribute('data-original-text', snippets[i].innerText);
+        }
+    }
+    deletedRowsQueue = [];
 }
+
 
 // load data
 function loadData() {
     chrome.storage.sync.get('snippetsData', ({ snippetsData }) => {
-        // if no data, disable edit/save buttons and create a starting row
+        // if no data, disable edit button
         if (!snippetsData || snippetsData.length === 0) {
             editButton.disabled = true;
-            saveButton.disabled = true;
-            createNewRow(false);
         } else {
-            // else, enable edit/save buttons and create rows for each item
+            // else, enable edit button and add data to table
             editButton.disabled = false;
-            saveButton.disabled = false;
             snippetsData.forEach(item => {
-                createNewRow(true);
+                createNewRow();
                 const shortcuts = document.getElementsByClassName('SS_shortcut');
                 const snippets = document.getElementsByClassName('SS_snippet');
+                shortcuts[shortcuts.length - 1].setAttribute('data-original-text', item.shortcut);
+                snippets[snippets.length - 1].setAttribute('data-original-text', item.snippet);
                 shortcuts[shortcuts.length - 1].innerText = item.shortcut;
                 snippets[snippets.length - 1].innerText = item.snippet;
             });
@@ -214,12 +203,11 @@ function loadData() {
     });
 }
 
+
 // event listeners
 saveButton.addEventListener('click', () => saveData());
-editButton.addEventListener('click', () => toggleEditing());
-addNewButton.addEventListener('click', () => createNewRow(false));
-saveNewButton.addEventListener('click', () => saveNewRow());
-cancelNewButton.addEventListener('click', () => cancelNewRow());
+editButton.addEventListener('click', () => isEditing ? endEditing(false) : startEditing());
+// addNewButton.addEventListener('click', () => openModal()); // TODO: build modal
 
 
 loadData();

@@ -137,11 +137,11 @@
 }
 
 .deleted-cell {
-    background-color: #ffeced
+    background-color: rgb(255, 235, 235);
 }
 
-.empty-cell {
-    background-color: #e7f4ea;
+.changed-cell {
+    background-color: rgb(236, 248, 236);
 }
 
 .table-header {
@@ -217,9 +217,7 @@
 
 .edit-button,
 .save-button,
-.add-new-button,
-.save-new-button,
-.cancel-new-button {
+.add-new-button {
     border: none;
     color: white;
     padding: 9px 28px;
@@ -250,32 +248,20 @@
     left: 2px;
 }
 
-.cancel-new-button {
-    display: none;
-}
-
-.cancel-new-button,
 .edit-button {
     background-color: #EF4444;
     margin-right: 10px;
 }
 
-.cancel-new-button:hover,
 .edit-button:hover {
     background-color: #EF4444ee;
 }
 
-.save-new-button {
-    display: none;
-}
-
-.save-button,
-.save-new-button {
+.save-button {
     background-color: #4CAF50;
 }
 
-.save-button:hover,
-.save-new-button:hover {
+.save-button:hover {
     background-color: #4CAF50ee;
 }
 
@@ -302,7 +288,7 @@
 
 .edit-button:disabled,
 .save-button:disabled {
-    background-color: #bbb;
+    background-color: #aaa;
     cursor: not-allowed;
 }
 
