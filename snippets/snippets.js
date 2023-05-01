@@ -4,6 +4,7 @@ document.getElementById('closeSnippets').addEventListener('click', () => {
 
 // state variables
 let isEditing = false;
+let isAddingNew = false;
 let deletedRowsQueue = [];
 
 // select elements
@@ -25,23 +26,38 @@ function createNewRow(fromExistingData) {
         <img src="../assets/delete.svg" class="delete-icon" />
     `;
     tableContainer.appendChild(newRow);
-    // add paste and delete event listeners
-    newRow.querySelector('.SS_shortcut').addEventListener('paste', handlePaste);
-    newRow.querySelector('.SS_snippet').addEventListener('paste', handlePaste);
+    // add paste, input, and delete event listeners
+    const shortcutCell = newRow.querySelector('.SS_shortcut');
+    const snippetCell = newRow.querySelector('.SS_snippet');
+    snippetCell.addEventListener('paste', cleanPastedText);
+    shortcutCell.addEventListener('paste', cleanPastedText);
+    snippetCell.addEventListener('input', handleCellInput);
+    shortcutCell.addEventListener('input', handleCellInput);
     newRow.querySelector('.delete-icon').addEventListener('click', handleDeleteClick);
-    console.log('fromExistingData', fromExistingData)
     if (!fromExistingData) {
-        console.log('new row that is not from existing data')
         editButton.style.display = 'none';
         saveButton.style.display = 'none';
-        cancelNewButton.style.display = 'inherit';
-        saveNewButton.style.display = 'inherit';
+        addNewButton.style.display = 'none';
+        cancelNewButton.style.display = 'inline-block';
+        saveNewButton.style.display = 'inline-block';
         newRow.querySelector('.SS_shortcut').focus();
+        isAddingNew = true;
     }
 }
 
+// cancel new row
+function cancelNewRow() {
+    tableContainer.removeChild(tableContainer.lastChild);
+    editButton.style.display = 'inline-block';
+    saveButton.style.display = 'inline-block';
+    addNewButton.style.display = 'inline-block';
+    cancelNewButton.style.display = 'none';
+    saveNewButton.style.display = 'none';
+    isAddingNew = false;
+}
+
 // clean pasted text
-function handlePaste(e) {
+function cleanPastedText(e) {
     e.preventDefault();
     const plainText = e.clipboardData.getData('text/plain');
     const selection = window.getSelection();
@@ -52,6 +68,29 @@ function handlePaste(e) {
     range.setStartAfter(textNode);
     selection.removeAllRanges();
     selection.addRange(range);
+}
+
+// save new row
+function saveNewRow() {
+    const newShortcut = tableContainer.lastChild.querySelector('.SS_shortcut').innerText;
+    const newSnippet = tableContainer.lastChild.querySelector('.SS_snippet').innerText;
+    chrome.storage.sync.get('snippetsData', data => {
+        const snippetsData = data.snippetsData;
+        snippetsData.push({
+            shortcut: newShortcut,
+            snippet: newSnippet
+        });
+        chrome.storage.sync.set({ snippetsData: snippetsData }, () => {
+            editButton.style.display = 'inline-block';
+            saveButton.style.display = 'inline-block';
+            addNewButton.style.display = 'inline-block';
+            cancelNewButton.style.display = 'none';
+            saveNewButton.style.display = 'none';
+            editButton.disabled = false;
+            saveButton.disabled = false;
+            isAddingNew = false;
+        });
+    });
 }
 
 // toggle editing
@@ -66,6 +105,7 @@ function toggleEditing() {
 // start editing
 function startEditing() {
     editButton.innerText = 'Cancel';
+    saveButton.innerText = 'Confirm';
     addNewButton.style.display = 'none';
     for (let i = 0; i < deleteIcons.length; i++) {
         deleteIcons[i].style.display = 'inherit';
@@ -73,9 +113,19 @@ function startEditing() {
     isEditing = true;
 }
 
+// handle cell input
+function handleCellInput(e) {
+    const cell = e.target.parentNode;
+    if (cell.innerText === '') {
+        cell.classList.add('empty-cell');
+    } else {
+        cell.classList.remove('empty-cell');
+    }
+}
+
 // handle delete click
-function handleDeleteClick(event) {
-    const rowToDelete = event.target.parentNode;
+function handleDeleteClick(e) {
+    const rowToDelete = e.target.parentNode;
     const rowIndex = Array.from(tableContainer.children).indexOf(rowToDelete);
     const shortcutValue = rowToDelete.querySelector('.SS_shortcut').innerText;
     const isDeleted = deletedRowsQueue.some(row => row.shortcut === shortcutValue);
@@ -90,21 +140,21 @@ function handleDeleteClick(event) {
         snippetCell.classList.add('deleted-cell');
         deletedRowsQueue.push({ element: rowToDelete, rowIndex: rowIndex, shortcut: shortcutValue });
     }
-    console.log(deletedRowsQueue);
 }
 
 // end editing
 function endEditing(saveChanges) {
     editButton.innerText = 'Edit';
+    saveButton.innerText = 'Save';
     addNewButton.style.display = 'inherit';
     for (let i = 0; i < deleteIcons.length; i++) {
         deleteIcons[i].style.display = 'none';
     }
-    // if saveChanges, delete rows marked for deletion
+    // if saving changes, delete rows marked for deletion
     if (saveChanges) {
         deletedRowsQueue.forEach(row => row.element.remove());
     } else {
-        // else, return rows to normal
+        // else, return deleted rows to normal state
         deletedRowsQueue.forEach(row => {
             row.element.children[0].classList.remove('deleted-cell');
             row.element.children[1].classList.remove('deleted-cell');
@@ -132,10 +182,10 @@ function saveData() {
     }
     deletedRowsQueue = [];
     chrome.storage.sync.set({ snippetsData: snippetsData }, () => {
-        console.log('Data saved');
         // if no data, create a starting row
-        console.log('Data: ', snippetsData)
         if (snippetsData.length === 0) {
+            editButton.disabled = true;
+            saveButton.disabled = true;
             createNewRow(false);
         }
     });
@@ -144,11 +194,15 @@ function saveData() {
 // load data
 function loadData() {
     chrome.storage.sync.get('snippetsData', ({ snippetsData }) => {
-        // if no data, create a starting row
+        // if no data, disable edit/save buttons and create a starting row
         if (!snippetsData || snippetsData.length === 0) {
+            editButton.disabled = true;
+            saveButton.disabled = true;
             createNewRow(false);
         } else {
-            // else, create rows for each item in snippetsData
+            // else, enable edit/save buttons and create rows for each item
+            editButton.disabled = false;
+            saveButton.disabled = false;
             snippetsData.forEach(item => {
                 createNewRow(true);
                 const shortcuts = document.getElementsByClassName('SS_shortcut');
@@ -164,6 +218,8 @@ function loadData() {
 saveButton.addEventListener('click', () => saveData());
 editButton.addEventListener('click', () => toggleEditing());
 addNewButton.addEventListener('click', () => createNewRow(false));
+saveNewButton.addEventListener('click', () => saveNewRow());
+cancelNewButton.addEventListener('click', () => cancelNewRow());
 
 
 loadData();

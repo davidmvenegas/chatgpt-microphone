@@ -78,7 +78,6 @@
 .header-row {
     position: relative;
     display: flex;
-    border-bottom: 1px solid #ddd;
     overflow: visible;
 }
 
@@ -97,18 +96,22 @@
 .snippet-row {
     position: relative;
     display: flex;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
     border-bottom: 1px solid #ddd;
     overflow: visible;
 }
 
+.header-row:last-child .cell:first-of-type,
 .snippet-row:last-child .cell:first-of-type {
     border-bottom-left-radius: 8px;
 }
 
+.header-row:last-child .cell:last-of-type,
 .snippet-row:last-child .cell:last-of-type {
     border-bottom-right-radius: 8px;
+}
+
+.snippet-row:nth-of-type(2) {
+    border-top: 1px solid #ddd;
 }
 
 .snippet-row:last-of-type {
@@ -134,7 +137,11 @@
 }
 
 .deleted-cell {
-    background-color: #ffe7e7;
+    background-color: #ffeced
+}
+
+.empty-cell {
+    background-color: #e7f4ea;
 }
 
 .table-header {
@@ -179,7 +186,7 @@
     position: absolute;
     display: none;
     top: 50%;
-    left: -32.5px;
+    left: -33.5px;
     height: 22px;
     width: 22px;
     animation: jiggle .5s linear infinite;
@@ -291,6 +298,12 @@
 
 .close-snippets-button>img:hover {
     transform: rotate(-90deg);
+}
+
+.edit-button:disabled,
+.save-button:disabled {
+    background-color: #bbb;
+    cursor: not-allowed;
 }
 
 @keyframes jiggle {
