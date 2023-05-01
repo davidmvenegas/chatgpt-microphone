@@ -5,6 +5,7 @@ document.getElementById('closeSnippets').addEventListener('click', () => {
 
 // state variables
 let isEditing = false;
+let isAddingNew = false;
 let deletedRowsQueue = [];
 const changedCells = new Set();
 
@@ -18,7 +19,7 @@ const deleteIcons = document.getElementsByClassName('delete-icon');
 
 
 // create new row
-function createNewRow() {
+function createNewRow(fromExistingData) {
     const newRow = document.createElement('div');
     newRow.classList.add('snippet-row');
     newRow.innerHTML = `
@@ -37,9 +38,17 @@ function createNewRow() {
     snippetCell.addEventListener('paste', cleanPastedText);
     snippetCell.addEventListener('input', handleTextChange);
     deleteIcon.addEventListener('click', handleDeleteClick);
-    // add original text attribute
-    shortcutCell.setAttribute('data-original-text', shortcutCell.innerText);
-    snippetCell.setAttribute('data-original-text', snippetCell.innerText);
+    if (!fromExistingData) {
+        // enter create mode
+        shortcutCell.parentNode.classList.add('changed-cell');
+        snippetCell.parentNode.classList.add('changed-cell');
+        addNewButton.style.display = 'none';
+        editButton.innerText = 'Cancel';
+        saveButton.innerText = 'Add';
+        editButton.disabled = false;
+        shortcutCell.focus();
+        isAddingNew = true;
+    }
 }
 
 
@@ -58,20 +67,59 @@ function cleanPastedText(e) {
 }
 
 
-// save new row -> TODO: use this in modal
+// handle edit click
+function handleEditClick() {
+    if (isAddingNew) {
+        // cancel new row
+        cancelNewRow();
+    } else if (isEditing) {
+        // end editing
+        endEditing(false);
+    } else {
+        // start editing
+        startEditing();
+    }
+}
+
+
+// cancel new row
+function cancelNewRow() {
+    tableContainer.lastChild.remove();
+    addNewButton.style.display = 'inherit';
+    editButton.innerText = 'Edit';
+    saveButton.innerText = 'Save';
+    saveButton.disabled = true;
+    editButton.disabled = tableContainer.children.length <= 1;
+    isAddingNew = false;
+}
+
+
+// save new row
 function saveNewRow() {
-    const newShortcut = tableContainer.lastChild.querySelector('.SS_shortcut').innerText;
-    const newSnippet = tableContainer.lastChild.querySelector('.SS_snippet').innerText;
+    const newShortcut = tableContainer.lastChild.querySelector('.SS_shortcut');
+    const newSnippet = tableContainer.lastChild.querySelector('.SS_snippet');
+    // save to storage
     chrome.storage.sync.get('snippetsData', data => {
         const snippetsData = data.snippetsData;
         snippetsData.push({
-            shortcut: newShortcut,
-            snippet: newSnippet
+            shortcut: newShortcut.innerText,
+            snippet: newSnippet.innerText,
         });
         chrome.storage.sync.set({ snippetsData: snippetsData }, () => {
             saveButton.disabled = true;
         });
     });
+    // exit create mode
+    newShortcut.setAttribute('data-original-text', newShortcut.innerText);
+    newSnippet.setAttribute('data-original-text', newSnippet.innerText);
+    newShortcut.parentNode.classList.remove('changed-cell');
+    newSnippet.parentNode.classList.remove('changed-cell');
+    addNewButton.style.display = 'inherit';
+    editButton.innerText = 'Edit';
+    saveButton.innerText = 'Save';
+    saveButton.disabled = true;
+    editButton.disabled = tableContainer.children.length <= 1;
+    isAddingNew = false;
 }
 
 
@@ -117,6 +165,7 @@ function handleTextChange(e) {
     const cellIndex = Array.from(cell.parentNode.parentNode.children).indexOf(cell.parentNode);
     const originalText = cell.getAttribute('data-original-text');
     const currentText = cell.innerText;
+    // change cell background color if changed
     if (originalText !== currentText) {
         cell.parentNode.classList.add('changed-cell');
         changedCells.add(cellIndex);
@@ -124,6 +173,7 @@ function handleTextChange(e) {
         cell.parentNode.classList.remove('changed-cell');
         changedCells.delete(cellIndex);
     }
+    // enable save button if there are changes
     saveButton.disabled = changedCells.size === 0;
 }
 
@@ -135,6 +185,7 @@ function handleDeleteClick(e) {
     const isDeleted = deletedRowsQueue.some(row => row.shortcut === shortcutValue);
     const shortcutCell = rowToDelete.children[0];
     const snippetCell = rowToDelete.children[1];
+    // toggle deleted cell class and add/remove from queue
     if (isDeleted) {
         shortcutCell.classList.remove('deleted-cell');
         snippetCell.classList.remove('deleted-cell');
@@ -151,6 +202,7 @@ function handleDeleteClick(e) {
 // save data
 function saveData() {
     if (isEditing) endEditing(true);
+    if (isAddingNew) saveNewRow();
     const shortcuts = document.getElementsByClassName('SS_shortcut');
     const snippets = document.getElementsByClassName('SS_snippet');
     const snippetsData = [];
@@ -168,10 +220,9 @@ function saveData() {
         saveButton.disabled = true;
         editButton.disabled = snippetsData.length === 0;
     });
-    // update data-original-text for each cell
     for (let i = 0; i < shortcuts.length; i++) {
         const shortcutValue = shortcuts[i].innerText;
-        // only include rows that are not marked for deletion
+        // update data-original-text for each cell
         if (!deletedRowsQueue.some(row => row.shortcut === shortcutValue)) {
             shortcuts[i].setAttribute('data-original-text', shortcutValue);
             snippets[i].setAttribute('data-original-text', snippets[i].innerText);
@@ -191,7 +242,7 @@ function loadData() {
             // else, enable edit button and add data to table
             editButton.disabled = false;
             snippetsData.forEach(item => {
-                createNewRow();
+                createNewRow(true);
                 const shortcuts = document.getElementsByClassName('SS_shortcut');
                 const snippets = document.getElementsByClassName('SS_snippet');
                 shortcuts[shortcuts.length - 1].setAttribute('data-original-text', item.shortcut);
@@ -206,8 +257,8 @@ function loadData() {
 
 // event listeners
 saveButton.addEventListener('click', () => saveData());
-editButton.addEventListener('click', () => isEditing ? endEditing(false) : startEditing());
-// addNewButton.addEventListener('click', () => openModal()); // TODO: build modal
+editButton.addEventListener('click', () => handleEditClick());
+addNewButton.addEventListener('click', () => createNewRow(false));
 
 
 loadData();
