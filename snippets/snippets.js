@@ -137,12 +137,6 @@ function startEditing() {
 
 // end editing
 function endEditing(saveChanges) {
-    editButton.innerText = 'Edit';
-    saveButton.innerText = 'Save';
-    addNewButton.style.display = 'inherit';
-    for (let i = 0; i < deleteIcons.length; i++) {
-        deleteIcons[i].style.display = 'none';
-    }
     if (saveChanges) {
         // if saving changes, delete rows in queue
         deletedRowsQueue.forEach(row => row.element.remove());
@@ -153,6 +147,13 @@ function endEditing(saveChanges) {
             row.element.children[1].classList.remove('deleted-cell');
         });
         deletedRowsQueue = [];
+    }
+    // exit edit mode
+    editButton.innerText = 'Edit';
+    saveButton.innerText = 'Save';
+    addNewButton.style.display = 'inherit';
+    for (let i = 0; i < deleteIcons.length; i++) {
+        deleteIcons[i].style.display = 'none';
     }
     saveButton.disabled = true;
     isEditing = false;
@@ -222,10 +223,12 @@ function saveData() {
     });
     for (let i = 0; i < shortcuts.length; i++) {
         const shortcutValue = shortcuts[i].innerText;
-        // update data-original-text for each cell
+        // update data-original-text and remove changed-cell class
         if (!deletedRowsQueue.some(row => row.shortcut === shortcutValue)) {
             shortcuts[i].setAttribute('data-original-text', shortcutValue);
             snippets[i].setAttribute('data-original-text', snippets[i].innerText);
+            shortcuts[i].parentNode.classList.remove('changed-cell');
+            snippets[i].parentNode.classList.remove('changed-cell');
         }
     }
     deletedRowsQueue = [];
