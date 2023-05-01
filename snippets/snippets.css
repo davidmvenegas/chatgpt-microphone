@@ -253,7 +253,7 @@
     background-color: #aaa;
     cursor: not-allowed;
 }
-/* ----------------- NOTIFICATIONS ----------------- */
+/* ----------------- MESSAGES ----------------- */
 .success-message,
 .error-message {
     display: none;
@@ -263,17 +263,17 @@
     padding: 0 12.5px;
     border-radius: 5px;
     gap: 8.5px;
-    margin-right: 17.5px;
+    margin-right: 20px;
 }
 .success-message {
     background-color: #f0fff0;
-    border: 1px solid #8ccb8e;
-    animation: successSlide 1.8s cubic-bezier(.36, .07, .19, .97);
+    border: 1.5px solid #6dcb71;
+    animation: successSlide 1.75s cubic-bezier(.36, .07, .19, .97) forwards;
 }
 .error-message {
     background-color: #fffce3;
-    border: 1px solid #f2cc41;
-    animation: errorShake 0.82s cubic-bezier(.36, .07, .19, .97);
+    border: 1.5px solid #ebcf69;
+    animation: errorShake 0.82s cubic-bezier(.36, .07, .19, .97) forwards;
 }
 .success-icon,
 .error-icon {
@@ -287,10 +287,10 @@
     font-weight: 400;
 }
 .success-description {
-    color: #4CAF50;
+    color: #49b44d;
 }
 .error-description {
-    color: #e9c544;
+    color: #e3b40a;
 }
 /* ----------------- ANIMATIONS ----------------- */
 @keyframes jiggle {
@@ -331,11 +331,14 @@
         transform: translate3d(80px, 0, 0);
         opacity: 0;
     }
-    25% {
+    5% {
+        opacity: 0;
+    }
+    20% {
         transform: translate3d(0, 0, 0);
         opacity: 1;
     }
-    75% {
+    80% {
         transform: translate3d(0, 0, 0);
         opacity: 1;
     }
@@ -343,7 +346,7 @@
         opacity: 0;
     }
     100% {
-        transform: translate3d(-110px, 0, 0);
+        transform: translate3d(-80px, 0, 0);
         opacity: 0;
     }
 }

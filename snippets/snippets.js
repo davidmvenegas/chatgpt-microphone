@@ -15,8 +15,8 @@ const tableContainer = document.getElementById('snippetsTable');
 const addNewButton = document.getElementById('addNewSnippet');
 const editButton = document.getElementById('editSnippets');
 const saveButton = document.getElementById('saveSnippets');
-const emptySnippetError = document.getElementById('emptySnippetError');
-const sameSnippetError = document.getElementById('sameSnippetError');
+const errorMessage = document.getElementById('errorMessage');
+const successMessage = document.getElementById('successMessage');
 const deleteIcons = document.getElementsByClassName('delete-icon');
 
 
@@ -240,34 +240,32 @@ function validateData() {
     // check for empty cells
     for (let i = 0; i < shortcuts.length; i++) {
         if (shortcuts[i].innerText.trim() === '' || snippets[i].innerText.trim() === '') {
-            showError(emptySnippetError);
+            showMessage(errorMessage, 'Snippets cannot be empty');
             return false;
         }
     }
     // check for duplicate shortcuts
     const uniqueShortcuts = new Set(shortcuts.map(cell => cell.innerText.trim()));
     if (uniqueShortcuts.size !== shortcuts.length) {
-        showError(sameSnippetError);
+        showMessage(errorMessage, 'Snippets cannot share the same shortcut');
         return false;
     }
     return true;
 }
 
 
-// show error
-function showError(errorElement) {
-    errorElement.style.display = 'flex';
-    setTimeout(() => {
-        errorElement.style.display = 'none';
-    }, 2500);
-}
-
-
 // save data
 function saveData() {
     if (!validateData()) return;
-    if (isEditing) endEditing(true);
-    if (isAddingNew) saveNewRow();
+    let messageText = 'Saved successfully';
+    if (isEditing) {
+        endEditing(true);
+        messageText = 'Removed successfully';
+    }
+    if (isAddingNew) {
+        saveNewRow();
+        messageText = 'Created successfully';
+    }
     const shortcuts = document.getElementsByClassName('SS_shortcut');
     const snippets = document.getElementsByClassName('SS_snippet');
     const snippetsData = [];
@@ -296,7 +294,19 @@ function saveData() {
         }
     }
     deletedRowsQueue = [];
+    showMessage(successMessage, messageText);
     setCellsReadOnly(false);
+}
+
+
+// show message
+function showMessage(messageElement, messageText) {
+    const messageDescription = messageElement.children[1];
+    messageDescription.innerText = messageText;
+    messageElement.style.display = 'flex';
+    setTimeout(() => {
+        messageElement.style.display = 'none';
+    }, 2500);
 }
 
 
