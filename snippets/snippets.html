@@ -39,6 +39,18 @@
                     <button class="add-new-button" id="addNewSnippet">New <span>&plus;</span></button>
                 </div>
                 <div class="right">
+                    <div class="success-message" id="snippetSuccessMessage">
+                        <img src="../assets/success.svg" alt="success" class="success-icon">
+                        <p class="success-description">Saved successfully</p>
+                    </div>
+                    <div class="error-message" id="emptySnippetError">
+                        <img src="../assets/warning.svg" alt="warning" class="error-icon">
+                        <p class="error-description">Snippets cannot be empty</p>
+                    </div>
+                    <div class="error-message" id="sameSnippetError">
+                        <img src="../assets/warning.svg" alt="warning" class="error-icon">
+                        <p class="error-description">Snippets cannot share the same shortcut</p>
+                    </div>
                     <button class="edit-button" id="editSnippets">Edit</button>
                     <button class="save-button" id="saveSnippets" disabled="true">Save</button>
                 </div>

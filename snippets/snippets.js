@@ -15,6 +15,8 @@ const tableContainer = document.getElementById('snippetsTable');
 const addNewButton = document.getElementById('addNewSnippet');
 const editButton = document.getElementById('editSnippets');
 const saveButton = document.getElementById('saveSnippets');
+const emptySnippetError = document.getElementById('emptySnippetError');
+const sameSnippetError = document.getElementById('sameSnippetError');
 const deleteIcons = document.getElementsByClassName('delete-icon');
 
 
@@ -48,6 +50,7 @@ function createNewRow(fromExistingData) {
         editButton.disabled = false;
         shortcutCell.focus();
         isAddingNew = true;
+        setCellsReadOnly(true);
     }
 }
 
@@ -67,17 +70,39 @@ function cleanPastedText(e) {
 }
 
 
+// set cells read-only
+function setCellsReadOnly(readOnly) {
+    const snippetRows = document.getElementsByClassName('snippet-row');
+    const numRows = isAddingNew ? snippetRows.length - 1 : snippetRows.length;
+    for (let i = 0; i < numRows; i++) {
+        const shortcutCell = snippetRows[i].querySelector('.SS_shortcut');
+        const snippetCell = snippetRows[i].querySelector('.SS_snippet');
+        shortcutCell.contentEditable = readOnly ? "false" : "true";
+        snippetCell.contentEditable = readOnly ? "false" : "true";
+        if (readOnly) {
+            shortcutCell.innerText = shortcutCell.getAttribute('data-original-text');
+            snippetCell.innerText = snippetCell.getAttribute('data-original-text');
+            shortcutCell.parentNode.classList.remove('changed-cell');
+            snippetCell.parentNode.classList.remove('changed-cell');
+        }
+    }
+}
+
+
 // handle edit click
 function handleEditClick() {
     if (isAddingNew) {
         // cancel new row
         cancelNewRow();
+        setCellsReadOnly(false);
     } else if (isEditing) {
         // end editing
         endEditing(false);
+        setCellsReadOnly(false);
     } else {
         // start editing
         startEditing();
+        setCellsReadOnly(true);
     }
 }
 
@@ -174,8 +199,16 @@ function handleTextChange(e) {
         cell.parentNode.classList.remove('changed-cell');
         changedCells.delete(cellIndex);
     }
-    // enable save button if there are changes
-    saveButton.disabled = changedCells.size === 0;
+    if (isAddingNew) {
+        // if adding new row, enable save button if both cells have text
+        const newRow = tableContainer.lastChild;
+        const newShortcut = newRow.querySelector('.SS_shortcut');
+        const newSnippet = newRow.querySelector('.SS_snippet');
+        saveButton.disabled = !(newShortcut.innerText.trim() && newSnippet.innerText.trim());
+    } else {
+        // else, enable save button if there are changes
+        saveButton.disabled = changedCells.size === 0;
+    }
 }
 
 
@@ -200,8 +233,39 @@ function handleDeleteClick(e) {
 }
 
 
+// validate data
+function validateData() {
+    const shortcuts = Array.from(document.getElementsByClassName('SS_shortcut'));
+    const snippets = Array.from(document.getElementsByClassName('SS_snippet'));
+    // check for empty cells
+    for (let i = 0; i < shortcuts.length; i++) {
+        if (shortcuts[i].innerText.trim() === '' || snippets[i].innerText.trim() === '') {
+            showError(emptySnippetError);
+            return false;
+        }
+    }
+    // check for duplicate shortcuts
+    const uniqueShortcuts = new Set(shortcuts.map(cell => cell.innerText.trim()));
+    if (uniqueShortcuts.size !== shortcuts.length) {
+        showError(sameSnippetError);
+        return false;
+    }
+    return true;
+}
+
+
+// show error
+function showError(errorElement) {
+    errorElement.style.display = 'flex';
+    setTimeout(() => {
+        errorElement.style.display = 'none';
+    }, 2500);
+}
+
+
 // save data
 function saveData() {
+    if (!validateData()) return;
     if (isEditing) endEditing(true);
     if (isAddingNew) saveNewRow();
     const shortcuts = document.getElementsByClassName('SS_shortcut');
@@ -232,6 +296,7 @@ function saveData() {
         }
     }
     deletedRowsQueue = [];
+    setCellsReadOnly(false);
 }
 
 
