@@ -4,6 +4,8 @@ Enhance your ChatGPT experience with this powerful Chrome extension! It features
 
 Achieve a new level of efficiency and speed with the ChatGPT microphone!
 
+## Features
+
 - 🗣️ **Voice-to-text**: Click the mic (or press CMD/CTR + M) and start speaking.
 - 📝 **Shortcut Snippets**: Custom phrases for fast insertion in conversations.
 - 🎨 **Dark/Light mode**: Perfectly matches ChatGPT's Dark and Light mode.
