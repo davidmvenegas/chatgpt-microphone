@@ -8,9 +8,6 @@ let mainFunctionRunning = false;
 let isRecognitionActive = false;
 let toggleRecognitionFunction = null;
 
-// import snippets data
-
-
 // add event listeners
 window.addEventListener('resize', runMain);
 window.addEventListener('keydown', handleHotkey);
@@ -38,8 +35,6 @@ async function runMain() {
 async function main() {
     // fetch snippets data
     const snippetsData = await fetchSnippetsData();
-
-    console.log(snippetsData);
 
     // select chatbox element
     const chatboxElement = document.querySelector('textarea[tabindex="0"]');
@@ -250,6 +245,8 @@ async function main() {
             'semicolon': ';',
             'full stop': '.',
             'question mark': '?',
+            'new paragraph': '\n\n',
+            'next paragraph': '\n\n',
             'exclamation mark': '!',
             'exclamation point': '!',
         };
