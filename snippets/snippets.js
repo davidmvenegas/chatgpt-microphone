@@ -15,7 +15,10 @@ const tableContainer = document.getElementById('snippetsTable');
 const addNewButton = document.getElementById('addNewSnippet');
 const editButton = document.getElementById('editSnippets');
 const saveButton = document.getElementById('saveSnippets');
+const errorMessage = document.getElementById('errorMessage');
+const successMessage = document.getElementById('successMessage');
 const deleteIcons = document.getElementsByClassName('delete-icon');
+const darkModeSwitch = document.getElementById('darkModeSwitch');
 
 
 // create new row
@@ -44,10 +47,11 @@ function createNewRow(fromExistingData) {
         snippetCell.parentNode.classList.add('changed-cell');
         addNewButton.style.display = 'none';
         editButton.innerText = 'Cancel';
-        saveButton.innerText = 'Add';
+        saveButton.innerText = 'Create';
         editButton.disabled = false;
         shortcutCell.focus();
         isAddingNew = true;
+        setCellsReadOnly(true);
     }
 }
 
@@ -67,17 +71,39 @@ function cleanPastedText(e) {
 }
 
 
+// set cells read-only
+function setCellsReadOnly(readOnly) {
+    const snippetRows = document.getElementsByClassName('snippet-row');
+    const numRows = isAddingNew ? snippetRows.length - 1 : snippetRows.length;
+    for (let i = 0; i < numRows; i++) {
+        const shortcutCell = snippetRows[i].querySelector('.SS_shortcut');
+        const snippetCell = snippetRows[i].querySelector('.SS_snippet');
+        shortcutCell.contentEditable = readOnly ? "false" : "true";
+        snippetCell.contentEditable = readOnly ? "false" : "true";
+        if (readOnly) {
+            shortcutCell.innerText = shortcutCell.getAttribute('data-original-text');
+            snippetCell.innerText = snippetCell.getAttribute('data-original-text');
+            shortcutCell.parentNode.classList.remove('changed-cell');
+            snippetCell.parentNode.classList.remove('changed-cell');
+        }
+    }
+}
+
+
 // handle edit click
 function handleEditClick() {
     if (isAddingNew) {
         // cancel new row
         cancelNewRow();
+        setCellsReadOnly(false);
     } else if (isEditing) {
         // end editing
         endEditing(false);
+        setCellsReadOnly(false);
     } else {
         // start editing
         startEditing();
+        setCellsReadOnly(true);
     }
 }
 
@@ -137,12 +163,6 @@ function startEditing() {
 
 // end editing
 function endEditing(saveChanges) {
-    editButton.innerText = 'Edit';
-    saveButton.innerText = 'Save';
-    addNewButton.style.display = 'inherit';
-    for (let i = 0; i < deleteIcons.length; i++) {
-        deleteIcons[i].style.display = 'none';
-    }
     if (saveChanges) {
         // if saving changes, delete rows in queue
         deletedRowsQueue.forEach(row => row.element.remove());
@@ -153,6 +173,13 @@ function endEditing(saveChanges) {
             row.element.children[1].classList.remove('deleted-cell');
         });
         deletedRowsQueue = [];
+    }
+    // exit edit mode
+    editButton.innerText = 'Edit';
+    saveButton.innerText = 'Save';
+    addNewButton.style.display = 'inherit';
+    for (let i = 0; i < deleteIcons.length; i++) {
+        deleteIcons[i].style.display = 'none';
     }
     saveButton.disabled = true;
     isEditing = false;
@@ -173,8 +200,16 @@ function handleTextChange(e) {
         cell.parentNode.classList.remove('changed-cell');
         changedCells.delete(cellIndex);
     }
-    // enable save button if there are changes
-    saveButton.disabled = changedCells.size === 0;
+    if (isAddingNew) {
+        // if adding new row, enable save button if both cells have text
+        const newRow = tableContainer.lastChild;
+        const newShortcut = newRow.querySelector('.SS_shortcut');
+        const newSnippet = newRow.querySelector('.SS_snippet');
+        saveButton.disabled = !(newShortcut.innerText.trim() && newSnippet.innerText.trim());
+    } else {
+        // else, enable save button if there are changes
+        saveButton.disabled = changedCells.size === 0;
+    }
 }
 
 
@@ -199,10 +234,39 @@ function handleDeleteClick(e) {
 }
 
 
+// validate data
+function validateData() {
+    const shortcuts = Array.from(document.getElementsByClassName('SS_shortcut'));
+    const snippets = Array.from(document.getElementsByClassName('SS_snippet'));
+    // check for empty cells
+    for (let i = 0; i < shortcuts.length; i++) {
+        if (shortcuts[i].innerText.trim() === '' || snippets[i].innerText.trim() === '') {
+            showMessage(errorMessage, 'Snippets cannot be empty');
+            return false;
+        }
+    }
+    // check for duplicate shortcuts
+    const uniqueShortcuts = new Set(shortcuts.map(cell => cell.innerText.trim()));
+    if (uniqueShortcuts.size !== shortcuts.length) {
+        showMessage(errorMessage, 'Snippets cannot share the same shortcut');
+        return false;
+    }
+    return true;
+}
+
+
 // save data
 function saveData() {
-    if (isEditing) endEditing(true);
-    if (isAddingNew) saveNewRow();
+    if (!validateData()) return;
+    let messageText = 'Saved successfully';
+    if (isEditing) {
+        endEditing(true);
+        messageText = 'Removed successfully';
+    }
+    if (isAddingNew) {
+        saveNewRow();
+        messageText = 'Created successfully';
+    }
     const shortcuts = document.getElementsByClassName('SS_shortcut');
     const snippets = document.getElementsByClassName('SS_snippet');
     const snippetsData = [];
@@ -222,13 +286,28 @@ function saveData() {
     });
     for (let i = 0; i < shortcuts.length; i++) {
         const shortcutValue = shortcuts[i].innerText;
-        // update data-original-text for each cell
+        // update data-original-text and remove changed-cell class
         if (!deletedRowsQueue.some(row => row.shortcut === shortcutValue)) {
             shortcuts[i].setAttribute('data-original-text', shortcutValue);
             snippets[i].setAttribute('data-original-text', snippets[i].innerText);
+            shortcuts[i].parentNode.classList.remove('changed-cell');
+            snippets[i].parentNode.classList.remove('changed-cell');
         }
     }
     deletedRowsQueue = [];
+    showMessage(successMessage, messageText);
+    setCellsReadOnly(false);
+}
+
+
+// show message
+function showMessage(messageElement, messageText) {
+    const messageDescription = messageElement.children[1];
+    messageDescription.innerText = messageText;
+    messageElement.style.display = 'flex';
+    setTimeout(() => {
+        messageElement.style.display = 'none';
+    }, 2500);
 }
 
 
@@ -252,6 +331,30 @@ function loadData() {
             });
         }
     });
+    chrome.storage.sync.get('darkMode', (data) => {
+        darkModeSwitch.checked = data.darkMode || false;
+        toggleDarkMode(data.darkMode);
+    });
+    setTimeout(() => {
+        document.body.classList.add('smooth-transition');
+        document.querySelector('.slider').classList.add('smooth-transition');
+    }, 100);
+}
+
+
+// toggle dark mode
+function toggleDarkMode(checked) {
+    if (checked) {
+        chrome.storage.sync.set({ darkMode: true });
+        for (const [key, value] of Object.entries(darkModeProperties)) {
+            document.documentElement.style.setProperty(key, value);
+        }
+    } else {
+        chrome.storage.sync.set({ darkMode: false });
+        for (const [key, value] of Object.entries(lightModeProperties)) {
+            document.documentElement.style.setProperty(key, value);
+        }
+    }
 }
 
 
@@ -259,6 +362,33 @@ function loadData() {
 saveButton.addEventListener('click', () => saveData());
 editButton.addEventListener('click', () => handleEditClick());
 addNewButton.addEventListener('click', () => createNewRow(false));
+darkModeSwitch.addEventListener('change', () => toggleDarkMode(darkModeSwitch.checked));
 
 
 loadData();
+
+
+const darkModeProperties = {
+    '--title': '#939aa7',
+    '--background': '#0d1117',
+    '--text-primary': '#e6edf3',
+    '--text-secondary': '#c1c9d4',
+    '--text-tertiary': '#67707d',
+    '--disabled-primary': '#21262d',
+    '--disabled-secondary': '#484f58',
+    '--new-button': '#646a76',
+    '--border': '#30363d',
+    '--header': '#161b22'
+};
+const lightModeProperties = {
+    '--title': '#6B7280',
+    '--background': '#ffffff',
+    '--text-primary': '#1F2328',
+    '--text-secondary': '#60676f',
+    '--text-tertiary': '#6e7781',
+    '--disabled-primary': '#f6f8fa',
+    '--disabled-secondary': '#9ca5af',
+    '--new-button': '#8991a1',
+    '--border': '#d0d7de',
+    '--header': '#f6f8fa'
+};

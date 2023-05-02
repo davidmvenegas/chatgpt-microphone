@@ -33,6 +33,9 @@ async function runMain() {
 
 
 async function main() {
+    // fetch snippets data
+    const snippetsData = await fetchSnippetsData();
+
     // select chatbox element
     const chatboxElement = document.querySelector('textarea[tabindex="0"]');
 
@@ -150,6 +153,7 @@ async function main() {
 
         // append transcript to chatbox
         recognition.addEventListener('result', (event) => {
+            chatboxElement.focus();
             const lastIndex = event.results.length - 1;
             const previousText = chatboxElement.value.slice(0, chatboxElement.selectionStart);
             const transcript = event.results[lastIndex][0].transcript.trim();
@@ -241,6 +245,8 @@ async function main() {
             'semicolon': ';',
             'full stop': '.',
             'question mark': '?',
+            'new paragraph': '\n\n',
+            'next paragraph': '\n\n',
             'exclamation mark': '!',
             'exclamation point': '!',
         };
@@ -248,8 +254,8 @@ async function main() {
         if (previousText.length === 0 || /[.!?]$/.test(previousText.trim()) || previousText.slice(-1) === '\n') {
             text = text.charAt(0).toUpperCase() + text.slice(1);
         }
-        // add a space to start if chatbox is not empty and last character is not a newline
-        if (previousText.length > 0 && previousText.slice(-1) !== '\n') {
+        // add a space to start if chatbox is not empty, last character is not a newline, and last character is not a space
+        if (previousText.length > 0 && previousText.slice(-1) !== '\n' && previousText.slice(-1) !== ' ') {
             text = ' ' + text;
         }
         // replace any punctuation words with actual punctuation
@@ -264,6 +270,11 @@ async function main() {
         });
         // remove whitespace before punctuation
         newText = newText.replace(/\s+([,.!?:])/g, '$1');
+        // replace any shortcut with its corresponding snippet
+        for (const snippet of snippetsData) {
+            const regexPattern = new RegExp(`\\b${snippet.shortcut}\\b`, 'gi');
+            newText = newText.replace(regexPattern, snippet.snippet);
+        }
         return newText;
     }
 
@@ -344,6 +355,15 @@ async function onOffAudioVolume() {
     return new Promise((resolve) => {
         chrome.storage.sync.get('onOffAudioVolume', (result) => {
             return resolve(result.onOffAudioVolume) || 0;
+        });
+    });
+}
+
+// load snippets data from storage
+async function fetchSnippetsData() {
+    return new Promise((resolve) => {
+        chrome.storage.sync.get('snippetsData', (result) => {
+            return resolve(result.snippetsData);
         });
     });
 }
