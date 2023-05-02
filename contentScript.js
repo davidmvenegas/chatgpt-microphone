@@ -8,6 +8,9 @@ let mainFunctionRunning = false;
 let isRecognitionActive = false;
 let toggleRecognitionFunction = null;
 
+// import snippets data
+
+
 // add event listeners
 window.addEventListener('resize', runMain);
 window.addEventListener('keydown', handleHotkey);
@@ -26,8 +29,6 @@ async function runMain() {
         mainFunctionRunning = false;
         removeMain();
     }
-    const snippetsData = await fetchSnippetsData();
-    console.log('snippetsData', snippetsData);
 }
 
 
@@ -35,6 +36,11 @@ async function runMain() {
 
 
 async function main() {
+    // fetch snippets data
+    const snippetsData = await fetchSnippetsData();
+
+    console.log(snippetsData);
+
     // select chatbox element
     const chatboxElement = document.querySelector('textarea[tabindex="0"]');
 
@@ -267,6 +273,11 @@ async function main() {
         });
         // remove whitespace before punctuation
         newText = newText.replace(/\s+([,.!?:])/g, '$1');
+        // replace any shortcut with its corresponding snippet
+        for (const snippet of snippetsData) {
+            const regexPattern = new RegExp(`\\b${snippet.shortcut}\\b`, 'gi');
+            newText = newText.replace(regexPattern, snippet.snippet);
+        }
         return newText;
     }
 
