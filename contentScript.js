@@ -324,14 +324,6 @@ function handleHotkey(e) {
     }
 }
 
-async function fetchSnippetsData() {
-    return new Promise((resolve) => {
-        chrome.storage.sync.get('snippetsData', (result) => {
-            return resolve(result.snippetsData);
-        });
-    });
-}
-
 // load sendMessageOnMicOff setting from storage
 async function sendMessageOnMicOff() {
     return new Promise((resolve) => {
@@ -355,6 +347,15 @@ async function onOffAudioVolume() {
     return new Promise((resolve) => {
         chrome.storage.sync.get('onOffAudioVolume', (result) => {
             return resolve(result.onOffAudioVolume) || 0;
+        });
+    });
+}
+
+// load snippets data from storage
+async function fetchSnippetsData() {
+    return new Promise((resolve) => {
+        chrome.storage.sync.get('snippetsData', (result) => {
+            return resolve(result.snippetsData);
         });
     });
 }
