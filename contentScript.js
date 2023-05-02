@@ -26,6 +26,8 @@ async function runMain() {
         mainFunctionRunning = false;
         removeMain();
     }
+    const snippetsData = await fetchSnippetsData();
+    console.log('snippetsData', snippetsData);
 }
 
 
@@ -150,6 +152,7 @@ async function main() {
 
         // append transcript to chatbox
         recognition.addEventListener('result', (event) => {
+            chatboxElement.focus();
             const lastIndex = event.results.length - 1;
             const previousText = chatboxElement.value.slice(0, chatboxElement.selectionStart);
             const transcript = event.results[lastIndex][0].transcript.trim();
@@ -248,8 +251,8 @@ async function main() {
         if (previousText.length === 0 || /[.!?]$/.test(previousText.trim()) || previousText.slice(-1) === '\n') {
             text = text.charAt(0).toUpperCase() + text.slice(1);
         }
-        // add a space to start if chatbox is not empty and last character is not a newline
-        if (previousText.length > 0 && previousText.slice(-1) !== '\n') {
+        // add a space to start if chatbox is not empty, last character is not a newline, and last character is not a space
+        if (previousText.length > 0 && previousText.slice(-1) !== '\n' && previousText.slice(-1) !== ' ') {
             text = ' ' + text;
         }
         // replace any punctuation words with actual punctuation
@@ -319,6 +322,14 @@ function handleHotkey(e) {
         e.preventDefault();
         toggleRecognitionFunction();
     }
+}
+
+async function fetchSnippetsData() {
+    return new Promise((resolve) => {
+        chrome.storage.sync.get('snippetsData', (result) => {
+            return resolve(result.snippetsData);
+        });
+    });
 }
 
 // load sendMessageOnMicOff setting from storage
