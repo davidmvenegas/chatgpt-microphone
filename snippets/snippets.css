@@ -1,14 +1,31 @@
+:root {
+    --title: #6B7280;
+    --background: #ffffff;
+    --text-primary: #1F2328;
+    --text-secondary: #60676f;
+    --text-tertiary: #6e7781;
+    --disabled-primary: #f6f8fa;
+    --disabled-secondary: #9ca5af;
+    --new-button: #8991a1;
+    --border: #d0d7de;
+    --header: #f6f8fa;
+}
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
 }
-#snippets-body {
+.smooth-transition,
+.smooth-transition:before {
+    transition: 0.25s;
+}
+body {
     position: relative;
     font-family: Arial, sans-serif;
     width: 100vw;
     height: 100vh;
     min-width: 850px;
+    background-color: var(--background);
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -17,7 +34,7 @@
 }
 .snippets {
     width: 100%;
-    padding: 120px 80px;
+    padding: 150px 80px;
 }
 .snippets-header {
     display: flex;
@@ -25,7 +42,7 @@
     justify-content: center;
     flex-direction: column;
     gap: 10px;
-    margin-bottom: 38px;
+    margin-bottom: 40px;
 }
 .snippets-title {
     display: flex;
@@ -34,7 +51,7 @@
     gap: 14px;
 }
 .snippets-title > h1 {
-    color: #6B7280;
+    color: var(--title);
     font-size: 40px;
 }
 .snippets-title > img {
@@ -43,7 +60,7 @@
     margin-bottom: 1px;
 }
 .snippets-description {
-    color: #6B7280;
+    color: var(--title);
     font-size: 19px;
     font-style: italic;
 }
@@ -61,7 +78,7 @@
     width: 100%;
     min-width: 750px;
     margin-bottom: 1.6rem;
-    box-shadow: rgba(50, 50, 93, 0.2) 0px 2px 5px -1px, rgba(0, 0, 0, 0.2) 0px 1px 3px -1px;
+    border: 1px solid var(--border);
     border-radius: 8px;
 }
 .header-row {
@@ -70,7 +87,7 @@
     overflow: visible;
 }
 .header-row .cell {
-    background-color: #6B728020;
+    background-color: var(--header);
 }
 .header-row:first-child .cell:first-of-type {
     border-top-left-radius: 8px;
@@ -81,7 +98,7 @@
 .snippet-row {
     position: relative;
     display: flex;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border);
     overflow: visible;
 }
 .header-row:last-child .cell:first-of-type,
@@ -93,7 +110,7 @@
     border-bottom-right-radius: 8px;
 }
 .snippet-row:nth-of-type(2) {
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--border);
 }
 .snippet-row:last-of-type {
     border-bottom: none;
@@ -102,44 +119,44 @@
     position: relative;
     padding: 10px 8px;
     text-align: left;
-    background-color: white;
 }
 .cell:first-of-type {
     width: 32.5%;
     max-width: 32.5%;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid var(--border);
 }
 .cell:last-of-type {
     width: 67.5%;
     max-width: 67.5%;
 }
 .deleted-cell {
-    background-color: rgb(255, 235, 235);
+    background-color: rgba(255, 0, 0, 0.1);
 }
 .changed-cell {
-    background-color: rgb(236, 248, 236);
+    background-color: rgba(0, 255, 0, 0.1);
 }
 .table-header {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding: 1px 0 2px;
+    padding: .5px 0 2px;
     gap: 5px;
 }
 .table-header > span:first-of-type {
-    color: #5f5f5f;
+    color: var(--text-secondary);
     font-size: 20px;
     font-weight: 600;
 }
 .table-header > span:last-of-type {
-    color: #999;
+    color: var(--text-tertiary);
     font-size: 15px;
     font-weight: 400;
 }
 .auto-grow {
     font-family: 'Arial', sans-serif;
     font-size: 17px;
+    color: var(--text-primary);
     padding: 4px 8px;
     width: 100%;
     min-height: 100%;
@@ -192,22 +209,22 @@
 .add-new-button {
     border: none;
     color: white;
-    padding: 9px 28px;
+    padding: 8px 28px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16.5px;
     font-weight: 500;
     border-radius: 6px;
-    box-shadow: rgba(50, 50, 93, 0.2) 0px 2px 5px -1px, rgba(0, 0, 0, 0.2) 0px 1px 3px -1px;
     z-index: 10;
     cursor: pointer;
 }
 .add-new-button {
-    background-color: #6B7280;
+    border: 1px solid var(--new-button);
+    background-color: var(--new-button);
 }
 .add-new-button:hover {
-    background-color: #6B7280ee;
+    opacity: 0.9;
 }
 .add-new-button > span {
     position: relative;
@@ -218,18 +235,120 @@
     left: 2px;
 }
 .edit-button {
-    background-color: #EF4444;
-    margin-right: 10px;
+    border: 1px solid #e83a37;
+    background-color: #e83a37;
+    margin-right: 12px;
 }
 .edit-button:hover {
-    background-color: #EF4444ee;
+    background-color: #f13b38;
 }
 .save-button {
-    background-color: #4CAF50;
+    border: 1px solid #2aac44;
+    background-color: #2aac44;
 }
 .save-button:hover {
-    background-color: #4CAF50ee;
+    background-color: #2ab646;
 }
+/* ----------------- MESSAGES ----------------- */
+.success-message,
+.error-message {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    height: 37px;
+    padding: 0 14px 0 12.5px;
+    border-radius: 5px;
+    gap: 8.5px;
+    margin-right: 20px;
+    opacity: .875;
+}
+.success-message {
+    background-color: #6dcb7125;
+    border: 1px solid #238636bb;
+    animation: successSlide 1.8s cubic-bezier(.36, .07, .19, .97) forwards;
+}
+.error-message {
+    background-color: #e3b40a25;
+    border: 1px solid #d0a712bb;
+    animation: errorShake 0.82s cubic-bezier(.36, .07, .19, .97) forwards;
+}
+.success-icon,
+.error-icon {
+    height: 19px;
+    width: 19px;
+    padding-bottom: .5px;
+}
+.success-description,
+.error-description {
+    font-size: 15px;
+    font-weight: 400;
+}
+.success-description {
+    color: #49b44d;
+}
+.error-description {
+    color: #d1a710;
+}
+/* ----------------- DARK MODE ----------------- */
+.dark-mode-switch {
+    position: absolute;
+    top: 35px;
+    left: 38px;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    margin-top: 1px;
+    cursor: pointer;
+}
+.dark-mode-switch .icons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 0 6px;
+}
+.dark-mode-switch .icons svg {
+    fill: var(--header);
+    z-index: 10;
+}
+.dark-mode-switch .icons svg:last-child {
+    height: 14.5px;
+    width: 14.5px;
+}
+.dark-mode-switch .icons svg:first-child {
+    height: 16.5px;
+    width: 16.5px;
+}
+.switch-input {
+    display: none;
+}
+.slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--text-secondary);
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 5px;
+    bottom: 4px;
+    background-color: var(--header);
+}
+.switch-input:checked + .slider:before {
+    transform: translateX(24px);
+}
+.slider.round {
+    border-radius: 18.5px;
+}
+.slider.round:before {
+    border-radius: 50%;
+}
+/* ----------------- CLOSE BUTTON ----------------- */
 .close-snippets-button {
     position: absolute;
     top: 35px;
@@ -250,47 +369,10 @@
 }
 .edit-button:disabled,
 .save-button:disabled {
-    background-color: #aaa;
+    color: var(--disabled-secondary);
+    background-color: var(--disabled-primary);
+    border: 1px solid var(--border);
     cursor: not-allowed;
-}
-/* ----------------- MESSAGES ----------------- */
-.success-message,
-.error-message {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    height: 38px;
-    padding: 0 12.5px;
-    border-radius: 5px;
-    gap: 8.5px;
-    margin-right: 20px;
-}
-.success-message {
-    background-color: #f0fff0;
-    border: 1.5px solid #6dcb71;
-    animation: successSlide 1.75s cubic-bezier(.36, .07, .19, .97) forwards;
-}
-.error-message {
-    background-color: #fffce3;
-    border: 1.5px solid #ebcf69;
-    animation: errorShake 0.82s cubic-bezier(.36, .07, .19, .97) forwards;
-}
-.success-icon,
-.error-icon {
-    height: 19px;
-    width: 19px;
-    padding-bottom: .5px;
-}
-.success-description,
-.error-description {
-    font-size: 15px;
-    font-weight: 400;
-}
-.success-description {
-    color: #49b44d;
-}
-.error-description {
-    color: #e3b40a;
 }
 /* ----------------- ANIMATIONS ----------------- */
 @keyframes jiggle {
@@ -328,13 +410,13 @@
 }
 @keyframes successSlide {
     0% {
-        transform: translate3d(80px, 0, 0);
+        transform: translate3d(50px, 0, 0);
         opacity: 0;
     }
     5% {
         opacity: 0;
     }
-    20% {
+    25% {
         transform: translate3d(0, 0, 0);
         opacity: 1;
     }
@@ -346,7 +428,7 @@
         opacity: 0;
     }
     100% {
-        transform: translate3d(-80px, 0, 0);
+        transform: translate3d(-100px, 0, 0);
         opacity: 0;
     }
 }

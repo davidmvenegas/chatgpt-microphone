@@ -18,6 +18,7 @@ const saveButton = document.getElementById('saveSnippets');
 const errorMessage = document.getElementById('errorMessage');
 const successMessage = document.getElementById('successMessage');
 const deleteIcons = document.getElementsByClassName('delete-icon');
+const darkModeSwitch = document.getElementById('darkModeSwitch');
 
 
 // create new row
@@ -46,7 +47,7 @@ function createNewRow(fromExistingData) {
         snippetCell.parentNode.classList.add('changed-cell');
         addNewButton.style.display = 'none';
         editButton.innerText = 'Cancel';
-        saveButton.innerText = 'Add';
+        saveButton.innerText = 'Create';
         editButton.disabled = false;
         shortcutCell.focus();
         isAddingNew = true;
@@ -330,6 +331,30 @@ function loadData() {
             });
         }
     });
+    chrome.storage.sync.get('darkMode', (data) => {
+        darkModeSwitch.checked = data.darkMode || false;
+        toggleDarkMode(data.darkMode);
+    });
+    setTimeout(() => {
+        document.body.classList.add('smooth-transition');
+        document.querySelector('.slider').classList.add('smooth-transition');
+    }, 100);
+}
+
+
+// toggle dark mode
+function toggleDarkMode(checked) {
+    if (checked) {
+        chrome.storage.sync.set({ darkMode: true });
+        for (const [key, value] of Object.entries(darkModeProperties)) {
+            document.documentElement.style.setProperty(key, value);
+        }
+    } else {
+        chrome.storage.sync.set({ darkMode: false });
+        for (const [key, value] of Object.entries(lightModeProperties)) {
+            document.documentElement.style.setProperty(key, value);
+        }
+    }
 }
 
 
@@ -337,6 +362,33 @@ function loadData() {
 saveButton.addEventListener('click', () => saveData());
 editButton.addEventListener('click', () => handleEditClick());
 addNewButton.addEventListener('click', () => createNewRow(false));
+darkModeSwitch.addEventListener('change', () => toggleDarkMode(darkModeSwitch.checked));
 
 
 loadData();
+
+
+const darkModeProperties = {
+    '--title': '#939aa7',
+    '--background': '#0d1117',
+    '--text-primary': '#e6edf3',
+    '--text-secondary': '#c1c9d4',
+    '--text-tertiary': '#67707d',
+    '--disabled-primary': '#21262d',
+    '--disabled-secondary': '#484f58',
+    '--new-button': '#646a76',
+    '--border': '#30363d',
+    '--header': '#161b22'
+};
+const lightModeProperties = {
+    '--title': '#6B7280',
+    '--background': '#ffffff',
+    '--text-primary': '#1F2328',
+    '--text-secondary': '#60676f',
+    '--text-tertiary': '#6e7781',
+    '--disabled-primary': '#f6f8fa',
+    '--disabled-secondary': '#9ca5af',
+    '--new-button': '#8991a1',
+    '--border': '#d0d7de',
+    '--header': '#f6f8fa'
+};
