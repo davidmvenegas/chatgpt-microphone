@@ -126,7 +126,7 @@ function saveNewRow() {
     const newSnippet = tableContainer.lastChild.querySelector('.SS_snippet');
     // save to storage
     chrome.storage.sync.get('snippetsData', data => {
-        const snippetsData = data.snippetsData;
+        const snippetsData = data.snippetsData || [];
         snippetsData.push({
             shortcut: newShortcut.innerText,
             snippet: newSnippet.innerText,

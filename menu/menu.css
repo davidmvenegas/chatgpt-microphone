@@ -21,12 +21,12 @@ body {
     gap: 10px;
 }
 
-.header>h1 {
+.header > h1 {
     font-size: 20.5px;
     color: #444;
 }
 
-.header>img {
+.header > img {
     width: 30px;
     height: 30px;
 }
@@ -192,11 +192,11 @@ body {
     transition: 0.2s;
 }
 
-input:checked+.slider {
+input:checked + .slider {
     background-color: #27a532;
 }
 
-input:checked+.slider:before {
+input:checked + .slider:before {
     transform: translateX(22.5px);
 }
 
@@ -214,6 +214,7 @@ input:checked+.slider:before {
     align-items: center;
     justify-content: space-between;
     flex-direction: row;
+    margin-top: 1px;
 }
 
 #onOffAudioVolume {

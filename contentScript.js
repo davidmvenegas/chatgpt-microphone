@@ -34,7 +34,7 @@ async function runMain() {
 
 async function main() {
     // fetch snippets data
-    const snippetsData = await fetchSnippetsData();
+    const snippetsData = await fetchSnippetsData() || [];
 
     // select chatbox element
     const chatboxElement = document.querySelector('textarea[tabindex="0"]');
@@ -202,7 +202,7 @@ async function main() {
         const hasMicrophoneAccess = await checkMicrophoneAccess();
         // stop if user has not granted microphone access
         if (!hasMicrophoneAccess) {
-            alert("Microphone access not granted. Please allow access to use this feature.");
+            alert("Please enable microphone access to use ChatGPT Microphone.");
             return;
         }
         isRecognitionActive ? turnOff(recognition) : turnOn(recognition);
