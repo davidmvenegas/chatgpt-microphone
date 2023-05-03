@@ -3,9 +3,12 @@
 
 // state variables
 let recognition = null;
+let healthTimer;
+let healthFailCount = 0;
 let scriptModifyingDOM = false;
 let mainFunctionRunning = false;
 let isRecognitionActive = false;
+let isUnsupportedBrowser = false;
 let toggleRecognitionFunction = null;
 
 // add event listeners
@@ -28,14 +31,19 @@ async function runMain() {
     }
 }
 
+// run health check
+function runHealthCheck() {
+    clearTimeout(healthTimer);
+    healthTimer = setTimeout(() => {
+        healthFailCount = 0;
+    }, 5000);
+}
+
 
 // ----------------- MAIN FUNCTION ----------------- //
 
 
 async function main() {
-    // fetch snippets data
-    const snippetsData = await fetchSnippetsData() || [];
-
     // select chatbox element
     const chatboxElement = document.querySelector('textarea[tabindex="0"]');
 
@@ -44,6 +52,9 @@ async function main() {
         console.warn('Could not find chatbox element.');
         return;
     }
+
+    // fetch snippets data
+    const snippetsData = await fetchSnippetsData() || [];
 
     // select chatbox parent element and send button
     const chatboxParentElement = chatboxElement.parentNode;
@@ -62,13 +73,16 @@ async function main() {
 
     // check if browser supports Speech Recognition API
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-        console.warn('Speech Recognition API is not supported in this browser.');
+    if (!SpeechRecognition && !isUnsupportedBrowser) {
+        handleUnsupportedBrowser();
         return;
     }
 
     // create an instance of Speech Recognition API
-    if (!recognition) {
+    if (recognition) {
+        recognition.stop();
+        recognition = null;
+    } else {
         recognition = new SpeechRecognition();
     }
 
@@ -76,9 +90,15 @@ async function main() {
     recognition.continuous = true;
     recognition.interimResults = true;
 
-    // if speech recognition times-out but is supposed to still be active, restart it
+    // if speech recognition ends when it's supposed to be active, check health and restart if necessary
     recognition.onend = () => {
         if (isRecognitionActive) {
+            healthFailCount++;
+            runHealthCheck();
+            if (healthFailCount > 5) {
+                handleUnsupportedBrowser();
+                return;
+            }
             setTimeout(() => recognition.start(), 100);
         }
     };
@@ -238,9 +258,9 @@ async function main() {
             'colon': ':',
             'comma': ',',
             'period': '.',
-            'new line': '\n',
             'ellipsis': '...',
             'ellipses': '...',
+            'new line': '\n',
             'next line': '\n',
             'semicolon': ';',
             'full stop': '.',
@@ -287,9 +307,9 @@ async function main() {
         const gainNode = audioContext.createGain();
         // set on and off tone properties
         const isTurningOn = toneType === 'ON';
-        const frequency = isTurningOn ? 400 : 300;
-        const duration = isTurningOn ? 0.4 : 0.35;
-        const volume = (isTurningOn ? 0.2 : 0.16) * userVolume / 100;
+        const frequency = isTurningOn ? 425 : 286.5;
+        const duration = isTurningOn ? 0.4 : 0.3;
+        const volume = (isTurningOn ? 0.2 : 0.17) * userVolume / 100;
         // set oscillator and gain node properties
         oscillator.type = 'sine';
         oscillator.frequency.value = frequency;
@@ -386,7 +406,8 @@ function initObserver() {
                     mutation.type === 'childList' &&
                     mutation.addedNodes.length > 0 &&
                     !document.querySelector('.GPT-microphone-button') &&
-                    !scriptModifyingDOM
+                    !scriptModifyingDOM &&
+                    !isUnsupportedBrowser
                 ) {
                     removeMain();
                     main();
@@ -419,6 +440,16 @@ function removeMain() {
     if (microphoneButton) microphoneButton.remove();
     if (microphoneAnimation) microphoneAnimation.remove();
     scriptModifyingDOM = false;
+}
+
+// handle unsupported browser
+function handleUnsupportedBrowser() {
+    removeMain();
+    recognition.stop();
+    recognition = null;
+    isRecognitionActive = false;
+    isUnsupportedBrowser = true;
+    setTimeout(() => alert('This browser cannot use ChatGPT Microphone because the Speech Recognition API is not supported :( \n\nPlease switch to Google Chrome to use the extension.'), 100);
 }
 
 
