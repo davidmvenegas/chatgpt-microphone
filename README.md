@@ -1,6 +1,6 @@
 # ChatGPT Microphone
 
-Supercharge your ChatGPT experience with this powerful Chrome extension! It features a convenient voice-to-text microphone and time-saving "Shortcut Snippets" that let you insert customized text snippets into your conversations by just saying their shortcuts. Achieve a new level of efficiency and speed with ChatGPT microphone!
+Supercharge your ChatGPT experience with this powerful Chrome extension! It features a convenient voice-to-text microphone and time-saving "Shortcut Snippets" for inserting customized text snippets into your conversations by just saying their shortcuts. Achieve a new level of efficiency and speed with ChatGPT microphone!
 
 ## Features
 
