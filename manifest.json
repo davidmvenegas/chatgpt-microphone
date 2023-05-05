@@ -4,11 +4,7 @@
     "version": "1.2.3",
     "description": "Add voice-to-text and shortcut snippets to ChatGPT.",
     "icons": {
-        "16": "/assets/icon16.png",
-        "32": "/assets/icon32.png",
-        "48": "/assets/icon48.png",
-        "128": "/assets/icon128.png",
-        "256": "/assets/icon256.png"
+        "48": "/assets/logo.png"
     },
     "content_scripts": [
         {
@@ -26,11 +22,7 @@
     "action": {
         "default_popup": "/menu/menu.html",
         "default_icon": {
-            "16": "/assets/icon16.png",
-            "32": "/assets/icon32.png",
-            "48": "/assets/icon48.png",
-            "128": "/assets/icon128.png",
-            "256": "/assets/icon256.png"
+            "48": "/assets/logo.png"
         }
     }
 }
