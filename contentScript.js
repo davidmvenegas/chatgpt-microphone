@@ -79,10 +79,7 @@ async function main() {
     }
 
     // create an instance of Speech Recognition API
-    if (recognition) {
-        recognition.stop();
-        recognition = null;
-    } else {
+    if (!recognition) {
         recognition = new SpeechRecognition();
     }
 
@@ -99,7 +96,9 @@ async function main() {
                 handleUnsupportedBrowser();
                 return;
             }
-            setTimeout(() => recognition.start(), 100);
+            if (recognition) {
+                setTimeout(() => recognition.start(), 100);
+            }
         }
     };
 
@@ -134,31 +133,31 @@ async function main() {
         // build animation
         microphoneAnimation.setAttribute('class', 'GPT-microphone-animation');
         microphoneAnimation.innerHTML = `
-        .GPT-microphone-active::before {
-            content: "";
-            display: block;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background-color: #f25c54;
-            opacity: 0;
-            animation: wave 1.65s infinite;
-        }
-        @keyframes wave {
-            0% {
-                transform: scale(.5);
+            .GPT-microphone-active::before {
+                content: "";
+                display: block;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background-color: #f25c54;
                 opacity: 0;
+                animation: wave 1.65s infinite;
             }
-            30% {
-                opacity: .5;
+            @keyframes wave {
+                0% {
+                    transform: scale(.5);
+                    opacity: 0;
+                }
+                30% {
+                    opacity: .5;
+                }
+                100% {
+                    transform: scale(2);
+                    opacity: 0;
+                }
             }
-            100% {
-                transform: scale(2);
-                opacity: 0;
-            }
-        }
-    `;
+        `;
 
         // append everything to DOM
         microphoneSVG.appendChild(microphonePath);
@@ -225,8 +224,16 @@ async function main() {
             alert("Please enable microphone access to use ChatGPT Microphone.");
             return;
         }
-        isRecognitionActive ? turnOff(recognition) : turnOn(recognition);
-        isRecognitionActive = !isRecognitionActive;
+        if (isRecognitionActive) {
+            turnOff(recognition);
+            isRecognitionActive = false;
+        } else {
+            // check if recognition has already started
+            if (recognition && recognition.state !== 'active') {
+                turnOn(recognition);
+                isRecognitionActive = true;
+            }
+        }
         chatboxElement.focus();
     }
 
@@ -309,7 +316,7 @@ async function main() {
         const isTurningOn = toneType === 'ON';
         const frequency = isTurningOn ? 425 : 286.5;
         const duration = isTurningOn ? 0.4 : 0.3;
-        const volume = (isTurningOn ? 0.2 : 0.17) * userVolume / 100;
+        const volume = (isTurningOn ? 0.2 : 0.16) * userVolume / 100;
         // set oscillator and gain node properties
         oscillator.type = 'sine';
         oscillator.frequency.value = frequency;
@@ -445,9 +452,6 @@ function removeMain() {
 // handle unsupported browser
 function handleUnsupportedBrowser() {
     removeMain();
-    recognition.stop();
-    recognition = null;
-    isRecognitionActive = false;
     isUnsupportedBrowser = true;
     setTimeout(() => alert('This browser cannot use ChatGPT Microphone because the Speech Recognition API is not supported :( \n\nPlease switch to Google Chrome to use the extension.'), 100);
 }
