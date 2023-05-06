@@ -263,12 +263,12 @@ body {
     opacity: .75;
 }
 .success-message {
-    background-color: #6dcb7125;
+    background-color: #6dcb7118;
     border: 1px solid #238636bb;
     animation: successSlide 1.8s cubic-bezier(.36, .07, .19, .97) forwards;
 }
 .error-message {
-    background-color: #e3b40a25;
+    background-color: #e3b40a18;
     border: 1px solid #d0a712bb;
     animation: errorShake 0.82s cubic-bezier(.36, .07, .19, .97) forwards;
 }
