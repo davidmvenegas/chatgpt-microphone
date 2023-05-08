@@ -2,6 +2,8 @@
 
 Supercharge your ChatGPT experience with this powerful Chrome extension! It features a seamlessly integrated voice-to-text microphone button and time-saving "Shortcut Snippets” for inserting customized text snippets into conversations when you say their designated keywords.
 
+[Add ChatGPT Microphone to Chrome](https://chrome.google.com/webstore/detail/chatgpt-microphone/kpnejlajlhnpfphbhgfipmlogplmidin)
+
 ## Features
 
 - 🗣️ **Voice-to-text**: Click the mic (or press CMD/CTR + M) and start speaking.
