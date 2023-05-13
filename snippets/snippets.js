@@ -2,6 +2,19 @@ document.getElementById('closeSnippets').addEventListener('click', () => {
     window.close();
 });
 
+// open initial load popup on first load
+chrome.storage.sync.get('popupShown', ({ popupShown }) => {
+    if (!popupShown) {
+        document.getElementById('initialLoadPopup').style.display = 'block';
+        chrome.storage.sync.set({ popupShown: true });
+    }
+});
+
+// close the initial load popup
+document.getElementById('closePopup').addEventListener('click', () => {
+    document.getElementById('initialLoadPopup').style.display = 'none';
+});
+
 
 // state variables
 let isEditing = false;

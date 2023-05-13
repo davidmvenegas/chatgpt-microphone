@@ -11,7 +11,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // update slider background
 function updateSliderBackground(slider) {
     const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-    slider.style.backgroundImage = `linear-gradient(to right, #27a532 ${value}%, #ddd ${value}%)`;
+    slider.style.backgroundImage = `linear-gradient(to right, #6b7488 ${value}%, #ddd ${value}%)`;
 }
 
 // load settings from storage

@@ -24,5 +24,8 @@
         "default_icon": {
             "512": "/assets/icon512.png"
         }
+    },
+    "background": {
+        "service_worker": "background.js"
     }
 }

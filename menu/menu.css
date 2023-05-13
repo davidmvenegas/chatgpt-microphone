@@ -1,3 +1,6 @@
+:root {
+    --color-primary: #6b7488;
+}
 * {
     padding: 0;
     margin: 0;
@@ -23,7 +26,7 @@ body {
 
 .header > h1 {
     font-size: 20.5px;
-    color: #444;
+    color: #5e6572;
 }
 
 .header > img {
@@ -50,7 +53,7 @@ body {
 }
 
 .feedback-title {
-    color: #111;
+    color: #292929;
     font-size: 15px;
     font-weight: 600;
     text-transform: uppercase;
@@ -65,7 +68,7 @@ body {
 }
 
 #feedback-email {
-    color: #27a532;
+    color: var(--color-primary);
     text-decoration: none;
     font-size: 13.5px;
 }
@@ -85,7 +88,7 @@ body {
 }
 
 .shortcuts-title {
-    color: #111;
+    color: #292929;
     font-size: 15px;
     font-weight: 600;
     text-transform: uppercase;
@@ -100,7 +103,7 @@ body {
 #command {
     font-size: 15px;
     font-weight: 700;
-    color: #27a532;
+    color: var(--color-primary);
 }
 
 .manage-snippets {
@@ -111,14 +114,14 @@ body {
     height: 34px;
     border: none;
     border-radius: 6px;
-    background-color: #27a532;
+    background-color: var(--color-primary);
     box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
     margin-top: 2.5px;
     cursor: pointer;
 }
 
 .manage-snippets:hover {
-    background-color: #27a532EE;
+    opacity: 0.9;
 }
 
 .options-section {
@@ -132,7 +135,7 @@ body {
 }
 
 .options-title {
-    color: #111;
+    color: #292929;
     font-size: 15px;
     font-weight: 600;
     text-transform: uppercase;
@@ -193,7 +196,7 @@ body {
 }
 
 input:checked + .slider {
-    background-color: #27a532;
+    background-color: var(--color-primary);
 }
 
 input:checked + .slider:before {
@@ -230,7 +233,7 @@ input:checked + .slider:before {
     -webkit-appearance: none;
     appearance: none;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px .5px, rgb(209, 213, 219) 0px 0px 0px .5px inset;
-    background-image: linear-gradient(to right, #27a532dd 50%, #ddd 50%);
+    background-image: linear-gradient(to right, var(--color-primary) 50%, #ddd 50%);
     outline: none;
     height: 10px;
     border-radius: 8px;
