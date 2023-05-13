@@ -124,6 +124,56 @@ body {
     opacity: 0.9;
 }
 
+.commands-section {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+    padding: 16px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.commands-title {
+    color: #292929;
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding-bottom: 6px;
+}
+
+.command {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    width: 100%;
+}
+
+.command-description {
+    color: #6c6c7d;
+    font-size: 14.5px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.command-input {
+    height: 26px;
+    width: 136px;
+    color: #6c6c7d;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0 6px;
+    outline: none;
+}
+
+.command-input::placeholder {
+    color: #bbb;
+    font-size: 13px;
+}
+
 .options-section {
     display: flex;
     align-items: flex-start;

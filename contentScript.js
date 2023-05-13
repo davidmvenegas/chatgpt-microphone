@@ -28,8 +28,10 @@ async function main() {
     const chatboxParentElement = chatboxElement.parentNode;
     const sendButton = chatboxParentElement.querySelector('button:nth-child(2)');
 
-    // fetch snippets data
+    // fetch snippets data and keywords from storage
     const snippetsData = await fetchFromStorage('snippetsData') || [];
+    const clearMessageKeyword = await fetchFromStorage('clearMessageKeyword') || null;
+    const submitMessageKeyword = await fetchFromStorage('submitMessageKeyword') || null;
 
 
     // ----------------- CREATE BUTTON ----------------- //
@@ -247,6 +249,17 @@ async function main() {
         for (const snippet of snippetsData) {
             const regexPattern = new RegExp(`\\b${snippet.shortcut}\\b`, 'gi');
             newText = newText.replace(regexPattern, snippet.snippet);
+        }
+        // clear chatbox if transcript includes clear keyword
+        if (clearMessageKeyword && text.includes(clearMessageKeyword)) {
+            chatboxElement.value = '';
+            text = text.replace(clearMessageKeyword, '');
+        }
+        // submit message if transcript includes submit keyword
+        if (submitMessageKeyword && text.includes(submitMessageKeyword)) {
+            turnOff()
+            sendButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            text = text.replace(submitMessageKeyword, '');
         }
         return newText;
     }
