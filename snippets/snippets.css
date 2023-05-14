@@ -380,8 +380,8 @@ body {
     position: absolute;
     top: 25px;
     right: 25px;
-    width: 252px;
-    height: 168px;
+    width: 300px;
+    height: 158px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -390,8 +390,8 @@ body {
     background-color: var(--new-button);
     font-size: 17px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
-    padding: 19px 22px 17px;
-    line-height: 1.225;
+    padding: 19px 24px 18px;
+    line-height: 1.25;
     border-radius: 8px;
     text-align: center;
     z-index: 100;
@@ -401,19 +401,19 @@ body {
     content: "";
     position: absolute;
     top: -28px;
-    right: 35.35%;
-    transform: translateX(35.35%);
+    right: 29.35%;
+    transform: translateX(29.35%);
     border: 14px solid transparent;
     border-bottom: 14px solid var(--new-button);
 }
 .popup-btn {
     font-size: 14px;
     font-weight: 600;
-    padding: 6px 24px;
+    padding: 6px 25px;
     border-radius: 5px;
     color: #6e7781;
     background-color: white;
-    margin-top: 15px;
+    margin-top: 16.5px;
     border: none;
     outline: none;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
