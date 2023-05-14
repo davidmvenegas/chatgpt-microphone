@@ -130,7 +130,17 @@ async function main() {
         chatboxElement.focus();
         const lastIndex = event.results.length - 1;
         const previousText = chatboxElement.value.slice(0, chatboxElement.selectionStart);
-        const transcript = event.results[lastIndex][0].transcript.trim();
+        let transcript = event.results[lastIndex][0].transcript.trim();
+        // check for clear keyword
+        if (clearMessageKeyword && transcript.includes(clearMessageKeyword)) {
+            chatboxElement.value = '';
+            transcript = transcript.replace(clearMessageKeyword, '');
+        }
+        // check for submit keyword
+        if (submitMessageKeyword && transcript.includes(submitMessageKeyword)) {
+            sendButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            transcript = transcript.replace(submitMessageKeyword, '');
+        }
         const processedTranscript = processTranscript(previousText, transcript);
         // if speech recognition is final, insert transcript at cursor position
         if (event.results[lastIndex].isFinal) {
@@ -249,17 +259,6 @@ async function main() {
         for (const snippet of snippetsData) {
             const regexPattern = new RegExp(`\\b${snippet.shortcut}\\b`, 'gi');
             newText = newText.replace(regexPattern, snippet.snippet);
-        }
-        // clear chatbox if transcript includes clear keyword
-        if (clearMessageKeyword && text.includes(clearMessageKeyword)) {
-            chatboxElement.value = '';
-            text = text.replace(clearMessageKeyword, '');
-        }
-        // submit message if transcript includes submit keyword
-        if (submitMessageKeyword && text.includes(submitMessageKeyword)) {
-            turnOff()
-            sendButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-            text = text.replace(submitMessageKeyword, '');
         }
         return newText;
     }
