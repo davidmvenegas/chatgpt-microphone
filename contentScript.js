@@ -132,14 +132,14 @@ async function main() {
         const previousText = chatboxElement.value.slice(0, chatboxElement.selectionStart);
         let transcript = event.results[lastIndex][0].transcript.trim();
         // check for clear keyword
-        if (clearMessageKeyword && transcript.includes(clearMessageKeyword)) {
+        if (clearMessageKeyword && transcript.toLowerCase().includes(clearMessageKeyword.toLowerCase())) {
             chatboxElement.value = '';
-            transcript = transcript.replace(clearMessageKeyword, '');
+            transcript = transcript.replace(new RegExp(clearMessageKeyword, 'gi'), '');
         }
         // check for submit keyword
-        if (submitMessageKeyword && transcript.includes(submitMessageKeyword)) {
+        if (submitMessageKeyword && transcript.toLowerCase().includes(submitMessageKeyword.toLowerCase())) {
             sendButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-            transcript = transcript.replace(submitMessageKeyword, '');
+            transcript = transcript.replace(new RegExp(submitMessageKeyword, 'gi'), '');
         }
         const processedTranscript = processTranscript(previousText, transcript);
         // if speech recognition is final, insert transcript at cursor position
