@@ -22,6 +22,7 @@ body {
     border-bottom: 1px solid #ddd;
     padding: 19px 4px 18px 0px;
     gap: 10px;
+    text-decoration: none;
 }
 
 .header > h1 {
