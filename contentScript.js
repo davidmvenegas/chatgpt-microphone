@@ -45,17 +45,17 @@ async function main() {
     const microphoneAnimation = document.createElement('style');
 
     // build microphone button
-    microphoneButton.setAttribute('class', 'GPT-microphone-button absolute border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] hover:bg-gray-100 dark:hover:bg-gray-900');
-    microphoneButton.setAttribute('style', 'right: -60px; bottom: 0; height: 50px; width: 50px; display: flex; align-items: center; justify-content: center; border-width: 1px; margin-bottom: -1px;');
+    microphoneButton.setAttribute('class', 'GPT-microphone-button absolute border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-xl shadow-xs dark:shadow-xs shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] hover:bg-gray-100 dark:hover:bg-gray-900');
+    microphoneButton.setAttribute('style', 'right: -69px; bottom: 0; height: 58px; width: 58px; display: flex; align-items: center; justify-content: center; border-width: 1px; margin-bottom: -1px;');
 
     // build icon container
     iconContainer.setAttribute('class', 'GPT-microphone-icon');
-    iconContainer.setAttribute('style', 'position: relative; width: 21px; height: 21px;');
+    iconContainer.setAttribute('style', 'position: relative; width: 22px; height: 22px;');
 
     // build svg element
     microphoneSVG.setAttribute('class', 'GPT-microphone-svg');
-    microphoneSVG.setAttribute('width', '21');
-    microphoneSVG.setAttribute('height', '21');
+    microphoneSVG.setAttribute('width', '22');
+    microphoneSVG.setAttribute('height', '22');
     microphoneSVG.setAttribute('viewBox', '0 0 484.5 484.5');
     microphoneSVG.setAttribute('xml:space', 'preserve');
 
@@ -157,6 +157,11 @@ async function main() {
             const inputEvent = new Event('input', { bubbles: true });
             chatboxElement.dispatchEvent(inputEvent);
         }
+    });
+
+    // turn off speech recognition when submit button is clicked
+    sendButton.addEventListener('click', () => {
+        turnOff();
     });
 
     // turn off speech recognition on enter (but not shift + enter)
