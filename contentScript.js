@@ -46,7 +46,7 @@ async function main() {
 
     // build microphone button
     microphoneButton.setAttribute('class', 'GPT-microphone-button absolute border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-xl shadow-xs dark:shadow-xs shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] hover:bg-gray-100 dark:hover:bg-gray-900');
-    microphoneButton.setAttribute('style', 'right: -69px; bottom: 0; height: 58px; width: 58px; display: flex; align-items: center; justify-content: center; border-width: 1px; margin-bottom: -1px;');
+    microphoneButton.setAttribute('style', 'right: -68px; bottom: 0; height: 58px; width: 58px; display: flex; align-items: center; justify-content: center; border-width: 1px; margin-bottom: -1px;');
 
     // build icon container
     iconContainer.setAttribute('class', 'GPT-microphone-icon');
