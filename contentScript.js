@@ -9,6 +9,9 @@ let isRecognitionActive = false;
 let isUnsupportedBrowser = false;
 let toggleRecognitionFunction = null;
 
+let mediaRecorder;
+let audioChunks = [];
+
 // add event listeners
 window.addEventListener('resize', checkScreenSize);
 window.addEventListener('keydown', handleHotkey);
@@ -164,12 +167,12 @@ async function main() {
         turnOff();
     });
 
-    // turn off speech recognition on enter (but not shift + enter)
-    chatboxElement.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            turnOff();
-        }
-    });
+    // // turn off speech recognition on enter (but not shift + enter)
+    // chatboxElement.addEventListener('keydown', (e) => {
+    //     if (e.key === 'Enter' && !e.shiftKey) {
+    //         turnOff();
+    //     }
+    // });
 
     // toggle speech recognition on click
     microphoneButton.addEventListener('click', (e) => {
@@ -203,7 +206,8 @@ async function main() {
     // turn microphone on
     function turnOn() {
         playAudioTone('ON');
-        recognition.start();
+        //recognition.start();
+        startRecording();
         microphonePath.setAttribute('fill', '#f25c54');
         iconContainer.classList.add('GPT-microphone-active');
         isRecognitionActive = true;
@@ -212,7 +216,8 @@ async function main() {
     // turn microphone off
     async function turnOff() {
         isRecognitionActive && playAudioTone('OFF');
-        recognition.stop();
+        //recognition.stop();
+        stopRecording();
         microphonePath.setAttribute('fill', '#8e8ea0');
         iconContainer.classList.remove('GPT-microphone-active');
         isRecognitionActive = false;
@@ -222,6 +227,26 @@ async function main() {
         }
     }
 
+    initMediaRecorder();
+
+    // 开始录音的函数
+    function startRecording() {
+        if (!mediaRecorder) {
+            console.error('MediaRecorder未初始化');
+            return;
+        }
+        audioChunks = [];
+        mediaRecorder.start();
+    }
+
+    // 停止录音的函数
+    function stopRecording() {
+        if (!mediaRecorder) {
+            console.error('MediaRecorder未初始化');
+            return;
+        }
+        mediaRecorder.stop();
+    }
     // process voice transcript
     function processTranscript(previousText, text) {
         const punctuationMap = {
@@ -321,6 +346,81 @@ function checkScreenSize() {
         isMainActive = false;
     }
 }
+
+function initMediaRecorder() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+
+            // 当有可用数据时，将其添加到音频块数组中
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            // 当录音停止时，将音频块组合成一个Blob
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+
+                const formData = new FormData();
+                formData.append('file', audioBlob, 'recording.wav');
+                formData.append('model', 'whisper-1'); // 根据API的模型要求
+                const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer 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', // 用你的真实令牌替换
+                    },
+                    body: formData,
+                });
+
+                // 检查响应状态
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                // 解析响应结果
+                const result = await response.json();
+
+                // 在此处处理转录结果，例如显示到UI
+                console.log('Transcription result:', result);
+
+                const chatboxElement = document.querySelector('textarea[tabindex="0"]');
+                if (!chatboxElement) return;
+                chatboxElement.focus();
+                // get cursor position and selection if any
+                const selectionStart = chatboxElement.selectionStart;
+                const selectionEnd = chatboxElement.selectionEnd;
+                // insert transcript at cursor position
+                const value = chatboxElement.value;
+                chatboxElement.value = value.slice(0, selectionStart) + result.text + value.slice(selectionEnd);
+                // move cursor to end of inserted text
+                chatboxElement.selectionStart = selectionStart + result.text.length;
+                chatboxElement.selectionEnd = chatboxElement.selectionStart;
+                // manually trigger input event
+                const inputEvent = new Event('input', { bubbles: true });
+                chatboxElement.dispatchEvent(inputEvent);
+
+                // // 提供下载链接
+                // const audioUrl = URL.createObjectURL(audioBlob);
+                // const downloadLink = Object.assign(document.createElement('a'), {
+                //     href: audioUrl,
+                //     download: 'recording.wav',
+                //     style: { display: 'none' }
+                // });
+
+                // // 临时将链接添加到文档以触发下载
+                // document.body.appendChild(downloadLink);
+                // downloadLink.click();
+
+                // // 清理：从文档中移除链接并撤销URL
+                // document.body.removeChild(downloadLink);
+                // URL.revokeObjectURL(audioUrl);
+            };
+        })
+        .catch(error => {
+            console.error('麦克风访问权限错误:', error);
+        });
+}
+
 
 // check microphone access
 async function checkMicrophoneAccess() {
