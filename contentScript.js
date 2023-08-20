@@ -367,7 +367,7 @@ function initMediaRecorder() {
                 const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
                     method: 'POST',
                     headers: {
-                        'Authorization': 'Bearer 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', // 用你的真实令牌替换
+                        'Authorization': 'Bearer your open ai kay', // 用你的真实令牌替换
                     },
                     body: formData,
                 });
