@@ -28,11 +28,6 @@ async function main() {
     const chatboxParentElement = chatboxElement.parentNode;
     const sendButton = chatboxParentElement.querySelector('button:nth-child(2)');
 
-    // fetch snippets data and keywords from storage
-    const snippetsData = await fetchFromStorage('snippetsData') || [];
-    const clearMessageKeyword = await fetchFromStorage('clearMessageKeyword') || null;
-    const submitMessageKeyword = await fetchFromStorage('submitMessageKeyword') || null;
-
 
     // ----------------- CREATE BUTTON ----------------- //
 
@@ -126,22 +121,24 @@ async function main() {
     };
 
     // append transcript to chatbox
-    recognition.addEventListener('result', (event) => {
+    recognition.addEventListener('result', async (event) => {
         chatboxElement.focus();
         const lastIndex = event.results.length - 1;
         const previousText = chatboxElement.value.slice(0, chatboxElement.selectionStart);
         let transcript = event.results[lastIndex][0].transcript.trim();
         // check for clear keyword
+        const clearMessageKeyword = await fetchFromStorage('clearMessageKeyword') || null;
         if (clearMessageKeyword && transcript.toLowerCase().includes(clearMessageKeyword.toLowerCase())) {
             chatboxElement.value = '';
             transcript = transcript.replace(new RegExp(clearMessageKeyword, 'gi'), '');
         }
         // check for submit keyword
+        const submitMessageKeyword = await fetchFromStorage('submitMessageKeyword') || null;
         if (submitMessageKeyword && transcript.toLowerCase().includes(submitMessageKeyword.toLowerCase())) {
             sendButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
             transcript = transcript.replace(new RegExp(submitMessageKeyword, 'gi'), '');
         }
-        const processedTranscript = processTranscript(previousText, transcript);
+        const processedTranscript = await processTranscript(previousText, transcript);
         // if speech recognition is final, insert transcript at cursor position
         if (event.results[lastIndex].isFinal) {
             // get cursor position and selection if any
@@ -159,9 +156,16 @@ async function main() {
         }
     });
 
-    // turn off speech recognition when submit button is clicked
-    sendButton.addEventListener('click', () => {
-        turnOff();
+    // manually turn off speech recognition when submit button 
+    // is clicked. (don't call turnOff() because it will trigger
+    // the send button again, causing an infinite loop)
+    sendButton.addEventListener('click', async () => {
+        if (await fetchFromStorage('micAlwaysListening')) return;
+        isRecognitionActive && playAudioTone('OFF');
+        recognition.stop();
+        microphonePath.setAttribute('fill', '#8e8ea0');
+        iconContainer.classList.remove('GPT-microphone-active');
+        isRecognitionActive = false;
     });
 
     // turn off speech recognition on enter (but not shift + enter)
@@ -176,6 +180,22 @@ async function main() {
         e.preventDefault();
         toggleRecognition();
     });
+
+    // turn on/off speech recognition when micAlwaysListening is toggled
+    chrome.storage.onChanged.addListener((changes) => {
+        if (changes.micAlwaysListening) {
+            if (changes.micAlwaysListening.newValue) {
+                turnOn();
+            } else {
+                turnOff();
+            }
+        }
+    });
+
+    // turn on speech recognition if micAlwaysListening is enabled on initial load
+    if (await fetchFromStorage('micAlwaysListening')) {
+        turnOn();
+    }
 
 
     // ----------------- HELPER FUNCTIONS ----------------- //
@@ -211,6 +231,7 @@ async function main() {
 
     // turn microphone off
     async function turnOff() {
+        if (await fetchFromStorage('micAlwaysListening')) return; // do not turn off if always listening
         isRecognitionActive && playAudioTone('OFF');
         recognition.stop();
         microphonePath.setAttribute('fill', '#8e8ea0');
@@ -223,7 +244,7 @@ async function main() {
     }
 
     // process voice transcript
-    function processTranscript(previousText, text) {
+    async function processTranscript(previousText, text) {
         const punctuationMap = {
             'colon': ':',
             'comma': ',',
@@ -261,6 +282,7 @@ async function main() {
         // remove spaces before punctuation
         newText = newText.replace(/\s+([,.!?:])/g, '$1');
         // replace any shortcut with its corresponding snippet
+        const snippetsData = await fetchFromStorage('snippetsData') || [];
         for (const snippet of snippetsData) {
             const regexPattern = new RegExp(`\\b${snippet.shortcut}\\b`, 'gi');
             newText = newText.replace(regexPattern, snippet.snippet);
@@ -277,7 +299,7 @@ async function main() {
         const gainNode = audioContext.createGain();
         // set on and off tone properties
         const isTurningOn = toneType === 'ON';
-        const frequency = isTurningOn ? 440 : 300;
+        const frequency = isTurningOn ? 440 : 340;
         const duration = isTurningOn ? 0.5 : 0.4;
         const volume = (isTurningOn ? 0.2 : 0.16) * userVolume / 100;
         // set oscillator and gain node properties

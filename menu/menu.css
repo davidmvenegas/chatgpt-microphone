@@ -223,6 +223,11 @@ body {
     height: 0;
 }
 
+.switch input:disabled + .slider {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
 .slider {
     position: absolute;
     cursor: pointer;
