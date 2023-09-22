@@ -9,6 +9,7 @@ Supercharge your ChatGPT experience with this powerful Chrome extension! It feat
 - 🗣️ **Voice-to-text**: Click the mic (or press CMD/CTR + M) and start speaking.
 - ⚙️ **Custom Commands**: Configure "clear text" or "send message" keywords.
 - 📝 **Shortcut Snippets**: Quick-insert custom phrases into your conversations.
+- ♾️ Always On Mode: "Look mom, no hands!" Converse without interruptions
 - 🎨 **Dark/Light mode**: Perfectly matches ChatGPT's Dark and Light mode.
 - 💰 **Completely FREE**: Enjoy all of these benefits at no cost.
 
