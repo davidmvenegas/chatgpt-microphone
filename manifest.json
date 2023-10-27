@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "ChatGPT Microphone",
-    "version": "1.4.5",
+    "version": "1.4.6",
     "description": "Add voice-to-text and shortcut snippets to ChatGPT.",
     "icons": {
         "512": "/assets/icon512.png"

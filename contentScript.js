@@ -28,6 +28,9 @@ async function main() {
     const chatboxParentElement = chatboxElement.parentNode;
     const sendButton = chatboxParentElement.querySelector('button:nth-child(2)');
 
+    // remove overflow hidden from parent element
+    chatboxParentElement.style.overflow = 'visible';
+
 
     // ----------------- CREATE BUTTON ----------------- //
 
