@@ -43,7 +43,7 @@ async function main() {
     const microphoneAnimation = document.createElement('style');
 
     // build microphone button
-    microphoneButton.setAttribute('class', 'GPT-microphone-button absolute border-black/20 btn-neutral focus:ring-0 focus:ring-offset-0 bg-white dark:text-white dark:bg-gray-800 rounded-2xl shadow-xs dark:shadow-xs shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] hover:bg-gray-100 dark:hover:bg-gray-900 gizmo:rounded-2xl gizmo:shadow-[0_0_0_2px_rgba(255,255,255,0.95)] gizmo:dark:shadow-[0_0_0_2px_rgba(52,53,65,0.95)]');
+    microphoneButton.setAttribute('class', 'GPT-microphone-button absolute btn-neutral rounded-2xl focus:ring-0 focus:ring-offset-0 shadow-[0_2px_6px_rgba(0,0,0,.05)]');
     microphoneButton.setAttribute('style', 'right: -68px; bottom: 0; height: 56px; width: 56px; display: flex; align-items: center; justify-content: center; border-width: 1px; margin-bottom: -1px;');
 
     // build icon container
