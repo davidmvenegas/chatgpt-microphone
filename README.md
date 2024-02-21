@@ -11,7 +11,7 @@ Supercharge your ChatGPT experience with this powerful Chrome extension! It feat
 - 📝 **Shortcut Snippets**: Quick-insert custom phrases into your conversations.
 - ♾️ Always On Mode: "Look mom, no hands!" Converse without interruptions.
 - 🎨 **Dark/Light mode**: Perfectly matches ChatGPT's Dark and Light mode.
-- 💰 **Completely FREE**: Enjoy all of these benefits at no cost.
+- 💰 **FREE**: Enjoy all of these benefits at no cost.
 
 ## Dev Installation
 
@@ -26,7 +26,7 @@ We'd love for you to contribute to ChatGPT Microphone! Feel free to submit a pul
 
 ## Feedback
 
-Your feedback is invaluable to us! 💌 Send your thoughts, suggestions, or questions to venegasdavidm@gmail.com.
+Your feedback is invaluable to us! 💌 Send your thoughts, suggestions, or questions to david@venegas.com.
 Let's make ChatGPT Microphone the best it can be, together!
 
 ## License
