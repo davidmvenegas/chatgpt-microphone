@@ -43,8 +43,8 @@ async function main() {
     const microphoneAnimation = document.createElement('style');
 
     // build microphone button
-    microphoneButton.setAttribute('class', 'GPT-microphone-button absolute btn-neutral rounded-2xl focus:ring-0 focus:ring-offset-0 shadow-[0_2px_6px_rgba(0,0,0,.05)]');
-    microphoneButton.setAttribute('style', 'right: -68px; bottom: 0; height: 56px; width: 56px; display: flex; align-items: center; justify-content: center; border-width: 1px; margin-bottom: -1px;');
+    microphoneButton.setAttribute('class', 'GPT-microphone-button absolute bg-[#f4f4f4] dark:bg-token-main-surface-secondary hover:opacity-70 transition-colors rounded-full focus:ring-0 focus:ring-offset-0 shadow-[0_2px_6px_rgba(0,0,0,.05)]');
+    microphoneButton.setAttribute('style', 'right: -66.5px; bottom: 0; height: 56px; width: 56px; display: flex; align-items: center; justify-content: center; margin-bottom: -1px;');
 
     // build icon container
     iconContainer.setAttribute('class', 'GPT-microphone-icon');
@@ -337,11 +337,11 @@ function debounce(func, wait) {
 
 // check screen size
 function checkScreenSize() {
-    if (window.innerWidth >= 1100 && !isMainActive) {
+    if (window.innerWidth >= 925 && !isMainActive) {
         main();
         isMainActive = true;
     }
-    if (window.innerWidth < 1100) {
+    if (window.innerWidth < 925) {
         removeMain();
         isMainActive = false;
     }
@@ -393,7 +393,7 @@ function initObserver() {
                     isMainActive
                 ) {
                     removeMain();
-                    main();
+                    setTimeout(() => { main() }, 100);
                 }
             }
         }, 10));
@@ -421,7 +421,6 @@ function removeMain() {
     if (microphoneButton) microphoneButton.remove();
     if (microphoneAnimation) microphoneAnimation.remove();
 }
-
 
 checkScreenSize();
 initObserver();
