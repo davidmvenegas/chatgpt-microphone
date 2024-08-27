@@ -13,7 +13,6 @@ let toggleRecognitionFunction = null;
 window.addEventListener('resize', checkScreenSize);
 window.addEventListener('keydown', handleHotkey);
 
-
 // ----------------- MAIN FUNCTION ----------------- //
 
 
@@ -26,7 +25,7 @@ async function main() {
 
     // select parent element and send button
     const chatboxParentElement = chatboxElement.parentNode.parentNode;
-    const sendButton = chatboxParentElement.querySelector('button:nth-child(2)');
+    const sendButton = document.querySelector('[data-testid="send-button"]');
 
     // remove overflow hidden from parent element
     chatboxParentElement.style.overflow = 'visible';
@@ -422,5 +421,28 @@ function removeMain() {
     if (microphoneAnimation) microphoneAnimation.remove();
 }
 
-checkScreenSize();
-initObserver();
+window.addEventListener('load', () => {
+    // Ensure the chat box element is loaded before running main
+    const chatboxElement = document.querySelector('textarea[tabindex="0"]');
+    if (chatboxElement) {
+        checkScreenSize();
+        initObserver();
+    } else {
+        // Retry if the chat box element isn't found yet
+        const retryInterval = setInterval(() => {
+            const chatboxElement = document.querySelector('textarea[tabindex="0"]');
+            if (chatboxElement) {
+                clearInterval(retryInterval);
+                checkScreenSize();
+                initObserver();
+
+                // clear once found
+                clearInterval(retryInterval);
+            }
+            console.log('Retrying...');
+        }, 100);
+
+        // Stop retrying after 10 seconds
+        setTimeout(() => clearInterval(retryInterval), 10000);
+    }
+});
