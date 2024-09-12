@@ -1,6 +1,4 @@
-### **🚨 This project is no longer maintained. Thank you to everyone who helped support and use ChatGPT Microphone! 🚨**
-
-<br>
+### **🚨 This project is deprecated and no longer maintained. Thank you to everyone who helped support and use ChatGPT Microphone! 🚨**
 
 # ChatGPT Microphone
 
