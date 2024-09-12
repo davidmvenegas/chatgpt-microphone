@@ -1,6 +1,10 @@
+### **🚨 This project is no longer maintained. Thank you to everyone who helped support and use ChatGPT Microphone! 🚨**
+
+<br>
+
 # ChatGPT Microphone
 
-Supercharge your ChatGPT experience with this powerful Chrome extension! It features a seamlessly integrated voice-to-text microphone button and time-saving "Shortcut Snippets” for inserting customized text snippets into conversations when you say their designated keywords. 
+Supercharge your ChatGPT experience with this powerful Chrome extension! It features a seamlessly integrated voice-to-text microphone button and time-saving "Shortcut Snippets” for inserting customized text snippets into conversations when you say their designated keywords.
 
 [🔗 Add to Chrome](https://chrome.google.com/webstore/detail/chatgpt-microphone/kpnejlajlhnpfphbhgfipmlogplmidin)
 
@@ -26,7 +30,7 @@ We'd love for you to contribute to ChatGPT Microphone! Feel free to submit a pul
 
 ## Feedback
 
-Your feedback is invaluable to us! 💌 Send your thoughts, suggestions, or questions to david@venegas.com.
+Your feedback is invaluable to us! 💌 Send your thoughts, suggestions, or questions to <david@venegas.com>.
 Let's make ChatGPT Microphone the best it can be, together!
 
 ## License
